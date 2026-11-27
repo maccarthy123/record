@@ -1,820 +1,6 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
-        window.__firebase_config = firebaseConfig;
-        window.__initial_auth_token = initialAuthToken;
-        window.__app_id = appId;
-            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIxNDY1NzI4MDc3NDAwMDczNjA1NyIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjX2MwYTU3MGQxZjcyZWJhMGNfMWFjMDIyZTZf5Z-65pys5YqfLmh0bWwtMjQzIn0sImV4cCI6MTc5NTc0MTQ5MywiaWF0IjoxNzk1NzM3ODkzLCJhbGciOiJSUzI1NiJ9.NZODMjJwy13-t4xzZp7LYFAOHFw9-ag61Kv36SvWVaLRiTtwgOwLiMyvBvDrHaN2_Hr0AmQ2MEKAoOLqhZPAbkLB7mch2gXBXGh7yF_ZJTtBmQniqkpRS3jVvjwH9ZkT8Bu7Ux8eMmftmmMu_AnY6C70GYz9Xq94SfyVB-J134W6xCrRUxhOXRXRurEMCtt4-KkbQ4Wm-8FBuMtF7ipl-ligf5T9eiwe0bCfaCBtU3GP2W-ptjZOdg-FFJw1DNAEDOkmaCLpUxz_Tg-1xbQ70ZL5agBWU6D_K-qrv4iDA0Vg_LStVbvThKdeupyOZtYNVyUuxveYfAup4tmTZ54-3Q","c_c0a570d1f72eba0c_1ac022e6_基本功.html-243")</script><script data-bard-client-injected="true">
-  document.addEventListener('input', (event) => {
-    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
-      const clonedDoc = document.cloneNode(true);
-      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
-      injectedScripts.forEach(el => el.remove());
-      window.parent.postMessage({
-        type: 'inlineEdit',
-        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
-      }, '*');
-    }
-  });
-</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const SCROLL_KEYS = new Set([
-    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
-  ]);
-  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
-
-  function isTextEntryTarget(target) {
-    if (!target) return false;
-    const tagName = target.tagName;
-    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
-        tagName === 'SELECT' || target.isContentEditable === true;
-  }
-
-  // An element absorbs the key only if it both overflows on the axis being
-  // scrolled and is configured to scroll on that axis. The cheap dimension
-  // test runs first because getComputedStyle forces a style recalc, and this
-  // runs on every keypress. Each axis is read from its own longhand: the
-  // 'overflow' shorthand serializes as two values when the axes differ, which
-  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
-  function canScroll(node, horizontal) {
-    const overflows = horizontal ? node.scrollWidth > node.clientWidth
-                                 : node.scrollHeight > node.clientHeight;
-    if (!overflows) return false;
-    const style = window.getComputedStyle(node);
-    const overflow = horizontal ? style.overflowX : style.overflowY;
-    return overflow === 'auto' || overflow === 'scroll';
-  }
-
-  // Walks up from the event target so nested scrollers keep their behavior.
-  // <body> is included because pages that pin the root height make it the
-  // scroll container.
-  function hasScrollableAncestor(target, horizontal) {
-    let node = target;
-    while (node && node !== document.documentElement) {
-      if (canScroll(node, horizontal)) return true;
-      node = node.parentElement;
-    }
-    return false;
-  }
-
-  function rootCanScroll(horizontal) {
-    const scroller = document.scrollingElement || document.documentElement;
-    if (!scroller) return false;
-    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
-    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
-                      : scroller.scrollHeight > window.innerHeight + 1;
-  }
-
-  window.addEventListener('keydown', function(event) {
-    if (!SCROLL_KEYS.has(event.key)) return;
-    if (event.defaultPrevented) return;
-    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
-    // reserved for shortcuts, so none of them are scroll intent.
-    if (event.altKey || event.metaKey || event.ctrlKey) return;
-
-    const target = event.target;
-    if (isTextEntryTarget(target)) return;
-
-    // Anything that can still absorb the scroll gets to keep it.
-    const horizontal = HORIZONTAL_KEYS.has(event.key);
-    if (rootCanScroll(horizontal)) return;
-    if (hasScrollableAncestor(target, horizontal)) return;
-
-    event.preventDefault();
-  }, {capture: true, passive: false});
-})();</script><script data-bard-client-injected="true">(function() {
-  // Ensure this script is executed only once
-  if (window.firebaseAuthBridgeScriptLoaded) {
-    return;
-  }
-  window.firebaseAuthBridgeScriptLoaded = true;
-
-  let nextTokenPromiseId = 0;
-
-  // Stores { resolve, reject } for ongoing token requests
-  const pendingTokenPromises = {};
-
-  // Listen for messages from the Host Application
-  window.addEventListener('message', function(event) {
-
-    const messageData = event.data;
-
-  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
-      const { success, token, error, promiseId } = messageData ?? {};
-      if (pendingTokenPromises[promiseId]) {
-        if (success) {
-          pendingTokenPromises[promiseId].resolve(token);
-        } else {
-          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
-        }
-        delete pendingTokenPromises[promiseId];
-      }
-    }
-  });
-
-  // Expose a function for the Generated App to request a new Firebase token
-  window.requestNewFirebaseToken = function() {
-    const currentPromiseId = nextTokenPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingTokenPromises[currentPromiseId] = { resolve, reject };
-    });
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({
-        type: 'REQUEST_NEW_FIREBASE_TOKEN',
-        promiseId: currentPromiseId
-      }, '*');
-    } else {
-      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
-      delete pendingTokenPromises[currentPromiseId];
-    }
-    return promise;
-  };
-})();</script><script data-bard-client-injected="true">
-let realOriginalGetUserMedia = null;
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-}
-
-(function() {
-  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
-    try {
-      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
-        get: function() {
-          return undefined; // Or throw an error
-        },
-        configurable: false
-      });
-    } catch (error) {
-      console.error("Error defining prototype getter:", error);
-    }
-  }
-})();
-
-(function() {
-  const pendingMediaResolvers = {};
-  let nextMediaPromiseId = 0;
-
-  function requestMediaPermissions(constraints) {
-    const mediaPromiseId = nextMediaPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingMediaResolvers[mediaPromiseId] = (granted) => {
-        delete pendingMediaResolvers[mediaPromiseId];
-        resolve(granted);
-      };
-    });
-
-    window.parent.postMessage({
-      type: 'requestMediaPermission',
-      constraints: constraints,
-      promiseId: mediaPromiseId,
-    }, '*');
-
-    return promise;
-  }
-
-  let originalGetUserMedia = realOriginalGetUserMedia;
-
-  function interceptGetUserMedia() {
-    if (navigator.mediaDevices) {
-      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
-        value: function(constraints) {
-          return requestMediaPermissions(constraints).then((granted) => {
-            if (granted) {
-              if (originalGetUserMedia) {
-                return originalGetUserMedia(constraints);
-              } else {
-                throw new Error("Original getUserMedia not available.");
-              }
-            } else {
-              throw new DOMException('Permission denied', 'NotAllowedError');
-            }
-          });
-        },
-        writable: false,
-        configurable: false
-      });
-    }
-  }
-
-  interceptGetUserMedia();
-
-  const observer = new MutationObserver(function(mutationsList, observer) {
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'childList' && mutation.addedNodes) {
-        mutation.addedNodes.forEach(node => {
-          if (node === navigator.mediaDevices) {
-            interceptGetUserMedia();
-          }
-        });
-      }
-    }
-  });
-
-  function interceptSpeechRecognition() {
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-      return;
-    }
-
-    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    const SpeechRecognitionWrapper = function(...args) {
-      const recognizer = new OriginalSpeechRecognition(...args);
-      const originalStart = recognizer.start.bind(recognizer);
-
-      recognizer.start = function() {
-        requestMediaPermissions({ audio: true }).then(granted => {
-          if (granted) {
-            originalStart();
-          } else {
-            const errorEvent = new SpeechRecognitionErrorEvent('error');
-            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
-            recognizer.dispatchEvent(errorEvent);
-          }
-        });
-      };
-
-      return recognizer;
-    };
-
-    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
-    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
-
-    if (window.SpeechRecognition) {
-      window.SpeechRecognition = SpeechRecognitionWrapper;
-    }
-    if (window.webkitSpeechRecognition) {
-      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
-    }
-  }
-
-  interceptSpeechRecognition();
-
-  window.addEventListener('message', function(event) {
-    if (event.data) {
-      if (event.data.type === 'resolveMediaPermission') {
-        const { promiseId, granted } = event.data;
-        if (pendingMediaResolvers[promiseId]) {
-          pendingMediaResolvers[promiseId](granted);
-        }
-      }
-    }
-  });
-
-})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
-function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
-
- Copyright The Closure Library Authors.
- SPDX-License-Identifier: Apache-2.0
-*/
-function A(b,d){function e(){}e.prototype=d.prototype;b.i=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
-let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
-null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.extensions="";var l=0,t=null,r=null,q=[],F=new TextEncoder,
-G=new TextDecoder;c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*
-16|0;return(f==="x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;
-(g=t)==null||g.postMessage(a)}};Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
-(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
-url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
-</script><script data-bard-client-injected="true">((function(modelInformation) {
-  const originalFetch = window.fetch;
-  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
-  let googleLlmBaseApiUrls = [
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
-  ];
-  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-    );
-  });
-  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-
-  const pendingFetchResolvers = {};
-  let nextPromiseId = 0;
-
-  function handleStringInput(input, optionsArgument) {
-    const actualUrl = input;
-    const fetchCallArgs = [actualUrl, optionsArgument];
-    const effectiveOptions = optionsArgument || {};
-    const bodyForApiKeyCheck = effectiveOptions.body;
-    const bodyForPostMessage = effectiveOptions.body;
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  function handleRequestInput(input, optionsArgument) {
-    const actualUrl = input.url;
-    const fetchCallArgs = [input, optionsArgument];
-    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (optionsArgument) {
-      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
-      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
-      if ('body' in optionsArgument) {
-        bodyForApiKeyCheck = optionsArgument.body;
-        bodyForPostMessage = optionsArgument.body;
-      } else {
-        bodyForApiKeyCheck = undefined;
-        bodyForPostMessage = input.body;
-      }
-    } else {
-      bodyForApiKeyCheck = undefined;
-      bodyForPostMessage = input.body;
-    }
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  window.fetch = function(input, optionsArgument) {
-    let actualUrl;
-    let fetchCallArgs;
-    let effectiveOptions = {};
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (typeof input === 'string') {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
-    } else if (input instanceof Request) {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
-    } else {
-      return originalFetch.apply(window, [input, optionsArgument]);
-    }
-
-    effectiveOptions.method = effectiveOptions.method || 'GET';
-    if (!effectiveOptions.headers) {
-      effectiveOptions.headers = new Headers();
-    }
-
-
-    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
-      let apiKeyIsNull = true;
-
-      const regex = new RegExp("models/([^:]+)");
-      const modelNameMatch = actualUrl.match(regex);
-      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
-
-
-      try {
-        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
-        const apiKeyParam = urlObject.searchParams.get('key');
-        if (apiKeyParam) {
-          apiKeyIsNull = false;
-        }
-      } catch (e) {
-        // Continue checks even if URL parsing fails
-      }
-
-      if (apiKeyIsNull && effectiveOptions.headers) {
-        const h = new Headers(effectiveOptions.headers);
-        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
-        if (apiKeyHeaderValue) {
-          apiKeyIsNull = false;
-          return originalFetch.apply(window, fetchCallArgs);
-        }
-      }
-
-      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
-        try {
-          const bodyData = JSON.parse(bodyForApiKeyCheck);
-          if (bodyData && bodyData.apiKey) {
-            apiKeyIsNull = false;
-            return originalFetch.apply(window, fetchCallArgs);
-          }
-        } catch (e) {
-          // Ignore JSON parsing errors
-        }
-      }
-
-      if(apiKeyIsNull) {
-        const promiseId = nextPromiseId++;
-        const promise = new Promise((resolve) => {
-          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
-            delete pendingFetchResolvers[promiseId];
-            resolve(resolvedResponse);
-          };
-        });
-
-        let serializedBodyForPostMessage;
-        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
-            serializedBodyForPostMessage = bodyForPostMessage;
-        } else if (bodyForPostMessage instanceof ReadableStream) {
-            serializedBodyForPostMessage = null;
-        } else {
-            try {
-                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
-            } catch (e) {
-                serializedBodyForPostMessage = null;
-            }
-        }
-
-        const messageOptions = {
-            method: effectiveOptions.method,
-            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
-            body: serializedBodyForPostMessage
-        };
-
-        window.parent.postMessage({
-          type: 'requestFetch',
-          url: actualUrl,
-          modelName: modelName,
-          options: messageOptions,
-          promiseId: promiseId,
-        }, '*');
-
-        return promise;
-      }
-      return originalFetch.apply(window, fetchCallArgs);
-    }
-    return originalFetch.apply(window, fetchCallArgs);
-  };
-
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'resolveFetch') {
-      const { promiseId, response } = event.data;
-      if (pendingFetchResolvers[promiseId]) {
-        try {
-          const reconstructedResponse = new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: new Headers(response.headers),
-          });
-          pendingFetchResolvers[promiseId](reconstructedResponse);
-        } catch (error) {
-          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
-        }
-      }
-    }
-  });
-
-}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function() {
-  const OVERLAY_SELECTOR =
-    'dialog[open], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
-
-  function isVisibleOverlay(element) {
-    if (element.closest('[hidden], [aria-hidden="true"], [inert]')) {
-      return false;
-    }
-    if (window.getComputedStyle(element).visibility === 'hidden') {
-      return false;
-    }
-    for (let cur = element; cur; cur = cur.parentElement) {
-      if (window.getComputedStyle(cur).display === 'none') {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function hasOpenOverlay() {
-    const candidates = document.querySelectorAll(OVERLAY_SELECTOR);
-    for (let i = 0; i < candidates.length; i++) {
-      if (isVisibleOverlay(candidates[i])) {
-        return true;
-      }
-    }
-    try {
-      if (document.querySelector('[popover]:popover-open')) {
-        return true;
-      }
-    } catch (e) {
-      // Ignore engines that do not support :popover-open.
-    }
-    return false;
-  }
-
-  function isNonEmptySearchInput(target) {
-    return (
-      Boolean(target) &&
-      target.tagName === 'INPUT' &&
-      typeof target.type === 'string' &&
-      target.type.toLowerCase() === 'search' &&
-      typeof target.value === 'string' &&
-      target.value.length > 0
-    );
-  }
-
-  function shouldIgnoreEscape(event) {
-    return (
-      event.key !== 'Escape' ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey ||
-      event.isComposing ||
-      event.repeat ||
-      event.keyCode === 229 ||
-      isNonEmptySearchInput(event.target)
-    );
-  }
-
-  let shouldIgnoreCaptureState = false;
-
-  window.addEventListener(
-    'keydown',
-    function(event) {
-      if (event.key === 'Escape') {
-        shouldIgnoreCaptureState =
-          hasOpenOverlay() || isNonEmptySearchInput(event.target);
-      }
-    },
-    {capture: true},
-  );
-
-  window.addEventListener('keydown', function(event) {
-    if (
-      shouldIgnoreEscape(event) ||
-      event.defaultPrevented ||
-      shouldIgnoreCaptureState
-    ) {
-      return;
-    }
-    const wasBlockedOnCapture = shouldIgnoreCaptureState;
-    queueMicrotask(function() {
-      if (event.defaultPrevented || wasBlockedOnCapture) {
-        return;
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({'type': 'escapeKey'}, '*');
-      }
-    });
-  });
-})();</script><script data-bard-client-injected="true">(function() {
-  function normalizeSlug(str) {
-    try {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^p{L}p{N}s_-]/gu, '')
-        .replace(/s+/g, '-');
-    } catch (e) {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9s_-]/g, '')
-        .replace(/s+/g, '-');
-    }
-  }
-
-  function findTargetElement(hash) {
-    if (!hash || hash === '#') {
-      return null;
-    }
-    const rawId = hash.startsWith('#') ? hash.slice(1) : hash;
-    let decodedId = rawId;
-    try {
-      decodedId = decodeURIComponent(rawId);
-    } catch (e) {
-      // Ignore URI malformed errors.
-    }
-
-    // 1. Direct ID match (raw and decoded).
-    let target = document.getElementById(rawId) || document.getElementById(decodedId);
-    if (target) {
-      return target;
-    }
-
-    // 2. Name attribute match (<a name="...">).
-    try {
-      if (typeof CSS !== 'undefined' && CSS.escape) {
-        target =
-          document.querySelector('[name="' + CSS.escape(rawId) + '"]') ||
-          document.querySelector('[name="' + CSS.escape(decodedId) + '"]');
-      } else {
-        const namedElements = document.getElementsByName(rawId);
-        if (namedElements && namedElements.length > 0) {
-          return namedElements[0];
-        }
-      }
-    } catch (e) {
-      // Ignore querySelector syntax errors.
-    }
-    if (target) {
-      return target;
-    }
-
-    // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
-    const targetSlug = normalizeSlug(decodedId);
-    if (targetSlug) {
-      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
-        if (normalizeSlug(heading.textContent || '') === targetSlug) {
-          return heading;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  document.addEventListener('click', function(event) {
-    const target = event.target;
-    const anchor = target && typeof target.closest === 'function' ? target.closest('a') : null;
-    if (!anchor) {
-      return;
-    }
-
-    const href = anchor.getAttribute('href');
-    if (
-      !href ||
-      href.trim().toLowerCase().startsWith('javascript:') ||
-      anchor.hasAttribute('download')
-    ) {
-      return;
-    }
-
-    // Check if the link is an in-page hash / anchor link.
-    if (href.startsWith('#')) {
-      event.preventDefault();
-      const targetElement = findTargetElement(href);
-      if (targetElement) {
-        targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
-      return;
-    }
-
-    // Check if the URL has the same origin/pathname but with a hash.
-    try {
-      const url = new URL(anchor.href, window.location.href);
-      if (
-        url.hash &&
-        url.origin === window.location.origin &&
-        url.pathname === window.location.pathname
-      ) {
-        event.preventDefault();
-        const targetElement = findTargetElement(url.hash);
-        if (targetElement) {
-          targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
-        return;
-      }
-    } catch (e) {
-      // Fall through if URL parsing fails.
-    }
-
-    // For all external or full navigation links, prevent iframe-level navigation
-    // (which breaks in AGSA WebView or sandboxed iframes) and ensure they open
-    // safely in a new tab/window.
-    if (anchor.target !== '_blank') {
-      event.preventDefault();
-      window.open(anchor.href, '_blank', 'noopener,noreferrer');
-    }
-  }, {capture: true});
-})();</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const originalConsoleLog = console.log;
-  const originalConsoleError = console.error;
-
-    /**
-   * Normalizes an error event or a promise rejection reason into a structured error object.
-   * @param {*} errorEventOrReason The error object or reason.
-   * @return {object} Structured error data { message, name, stack }.
-   */
-  function getErrorObject(errorEventOrReason) {
-    if (errorEventOrReason instanceof Error) {
-      return {
-        message: errorEventOrReason.message,
-        name: errorEventOrReason.name,
-        stack: errorEventOrReason.stack,
-      };
-    }
-    // Fallback for non-Error objects.
-    try {
-      return {
-        message: JSON.stringify(errorEventOrReason),
-        name: 'UnknownErrorType',
-        stack: null,
-      };
-    } catch (e) {
-      return {
-        message: String(errorEventOrReason),
-        name: 'UnknownErrorTypeNonStringifiable',
-        stack: null,
-      };
-    }
-  }
-
-  /**
-   * Converts an array of arguments (from log/error) into a single string.
-   * Handles Error objects specially to include their message and stack.
-   * @param {Array<*>} args - Arguments passed to console methods.
-   * @return {string} A string representation of the arguments.
-   */
-  function stringifyArgs(args) {
-    return args
-      .map((arg) => {
-        if (arg instanceof Error) {
-          const {message, stack} = arg;
-          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
-        }
-        if (typeof arg === 'object' && arg !== null) {
-          try {
-            return JSON.stringify(arg);
-          } catch (error) {
-            return '[Circular Object]';
-          }
-        } else {
-          return String(arg);
-        }
-      })
-      .join(' ');
-  }
-
-  console.log = function(...args) {
-    const logString = stringifyArgs(args);
-    window.parent.postMessage({ type: 'log', message: logString }, '*');
-    originalConsoleLog.apply(console, args);
-  };
-
-  console.error = function(...args) {
-    let errorData;
-    if (args.length > 0 && args[0] instanceof Error) {
-      const err = args[0];
-      // If the first arg is an Error, capture its details.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        ...getErrorObject(err),
-        rawArgsString: stringifyArgs(args.slice(1)),
-        timestamp: new Date().toISOString(),
-      };
-    } else {
-      // If not an Error object, treat all args as a general error message.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        message: stringifyArgs(args),
-        name: 'ConsoleLoggedError',
-        stack: null,
-        timestamp: new Date().toISOString(),
-      };
-    }
-    window.parent.postMessage(errorData, '*');
-    originalConsoleError.apply(console, args);
-  };
-
-  // Listen for global unhandled synchronous errors.
-  window.addEventListener('error', function(event) {
-    const errorDetails = event.error ? getErrorObject(event.error) : {
-      message: event.message,
-      name: 'GlobalError',
-      stack: null,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno,
-    };
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'global',
-      ...errorDetails,
-      message: errorDetails.message || event.message,
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-  // Listen for unhandled promise rejections (asynchronous errors).
-  window.addEventListener('unhandledrejection', function(event) {
-    const errorDetails = getErrorObject(event.reason);
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'unhandledrejection',
-      ...errorDetails,
-      message: errorDetails.message || 'Unhandled Promise Rejection',
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-})();</script>
+<html lang="zh-CN">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
@@ -837,6 +23,8 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     --amber-soft:#FDF2E7;
     --stone:#7E7972;
     --stone-soft:#F0EDE7;
+    --err:#C2593F;
+    --err-soft:#FDECE6;
     --shadow:0 10px 32px -12px rgba(43,51,46,.08),0 2px 8px -2px rgba(43,51,46,.04);
     --shadow-hover:0 14px 36px -12px rgba(43,51,46,.12),0 4px 12px -2px rgba(43,51,46,.05);
     --radius:22px;
@@ -886,6 +74,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   .subtitle{
     margin:4px 0 0;font-size:14.5px;color:var(--ink-2);line-height:1.6;
   }
+  .top-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .top-pill{
     display:flex;align-items:center;gap:10px;
     padding:10px 16px;border-radius:16px;
@@ -893,6 +82,21 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     box-shadow:var(--shadow);font-size:13px;color:var(--ink-2);
   }
   .top-pill strong{color:var(--sage-hi);font-weight:650}
+
+  .sync-pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 16px;border-radius:16px;cursor:pointer;
+    background:var(--card);border:1px solid var(--line);
+    box-shadow:var(--shadow);font-family:inherit;font-size:13px;font-weight:600;
+    color:var(--ink-2);transition:.18s ease;
+  }
+  .sync-pill:hover{background:var(--card-soft);border-color:#D5CFC2;color:var(--ink)}
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:#C5BEB2;flex:0 0 auto}
+  .sync-pill.ok .sync-dot{background:var(--sage)}
+  .sync-pill.ok{border-color:#C6E3D3;color:var(--sage-hi);background:#F5FBF7}
+  .sync-pill.busy .sync-dot{background:var(--amber)}
+  .sync-pill.err .sync-dot{background:var(--err)}
+  .sync-pill.err{border-color:#F0B9A8;color:var(--err);background:var(--err-soft)}
 
   /* ---------- 卡片通用 ---------- */
   .card{
@@ -1217,7 +421,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
     background:linear-gradient(135deg, #FFFFFF 0%, #F4F9F5 100%);
   }
-  .vault-info{display:flex;flex-direction:column;gap:4px;max-width:540px}
+  .vault-info{display:flex;flex-direction:column;gap:4px;max-width:520px}
   .vault-title{font-size:15.5px;font-weight:700;color:var(--ink);margin:0}
   .vault-desc{font-size:13px;line-height:1.6;color:var(--ink-2);margin:0}
   .vault-stat{font-size:12px;font-weight:600;color:var(--sage-hi);margin-top:2px}
@@ -1256,7 +460,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   }
   .modal[hidden]{display:none}
   .sheet{
-    width:min(440px,100%);padding:22px 24px 20px;
+    width:min(460px,100%);padding:22px 24px 20px;
     background:var(--card);border:1px solid var(--line);border-radius:22px;
     box-shadow:0 24px 60px -16px rgba(43,51,46,.22);
     animation:rise .24s cubic-bezier(.2,.7,.3,1) both;
@@ -1274,27 +478,35 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   .sheet label.fl{
     display:block;margin-top:16px;font-size:12.5px;font-weight:600;color:var(--ink-2);
   }
-  .sheet input[type=text], .sheet select{
+  .sheet input[type=text], .sheet input[type=password], .sheet select, .sheet textarea{
     display:block;width:100%;margin-top:7px;padding:11px 13px;
     background:var(--card-soft);border:1.5px solid var(--line);border-radius:12px;
-    color:var(--ink);font-family:inherit;font-size:14.5px;outline:none;transition:.18s;
+    color:var(--ink);font-family:inherit;font-size:14px;outline:none;transition:.18s;
   }
-  .sheet input[type=text]:focus, .sheet select:focus{border-color:var(--sage);background:#FFF}
-  .sheet input.bad{border-color:#D97757;background:#FFF7F4}
+  .sheet textarea{min-height:120px;resize:vertical;font-size:12.5px;line-height:1.5}
+  .sheet input:focus, .sheet select:focus, .sheet textarea:focus{border-color:var(--sage);background:#FFF}
+  .sheet input.bad, .sheet textarea.bad{border-color:#D97757;background:#FFF7F4}
+  .mhint{margin-top:8px;font-size:12px;line-height:1.6;color:var(--muted)}
+  .sync-msg{margin-top:10px;padding:9px 12px;border-radius:10px;font-size:12.5px;line-height:1.5}
+  .sync-msg[hidden]{display:none}
+  .sync-msg.ok{background:var(--sage-soft);color:var(--sage-hi)}
+  .sync-msg.err{background:var(--err-soft);color:var(--err)}
   .mcheck{
     display:flex;align-items:flex-start;gap:9px;margin-top:16px;
     font-size:13px;line-height:1.6;color:var(--ink-2);cursor:pointer;
   }
   .mcheck input{accent-color:var(--sage);width:16px;height:16px;margin:2px 0 0}
-  .mfoot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+  .mfoot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;flex-wrap:wrap}
   .mfoot button{
-    padding:9px 18px;cursor:pointer;border:1px solid var(--line);
+    padding:9px 16px;cursor:pointer;border:1px solid var(--line);
     background:var(--card-soft);color:var(--ink-2);border-radius:11px;
     font-family:inherit;font-size:13.5px;font-weight:600;transition:.18s;
   }
   .mfoot button:hover{background:#ECE7DC;color:var(--ink)}
   .mfoot .primary{background:var(--sage);border-color:var(--sage);color:#FFF}
   .mfoot .primary:hover{background:var(--sage-hi)}
+  .mfoot .danger{color:var(--err);border-color:#F0B9A8;background:var(--err-soft)}
+  .mfoot .danger:hover{background:#F8DCD2}
   .mtext{padding:16px 0 2px;font-size:14.5px;line-height:1.75;color:var(--ink)}
   .mtext b{color:var(--sage-hi);font-weight:650}
   .mtext span{display:block;margin-top:6px;font-size:12.5px;color:var(--muted)}
@@ -1340,8 +552,14 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       <h1>基本功</h1>
       <p class="subtitle">不带评判地观察自己——点一下 ✓ 或 ✕，把真实的反馈留下来。</p>
     </div>
-    <div class="top-pill">
-      <span>今日共有 <strong id="cntTop">10</strong> 件小事，做一件事就算一件事</span>
+    <div class="top-right">
+      <div class="top-pill">
+        <span>今日共有 <strong id="cntTop">10</strong> 件小事</span>
+      </div>
+      <button class="sync-pill" id="syncPill" title="配置 GitHub 私有云同步">
+        <span class="sync-dot"></span>
+        <span id="syncText">云同步：未配置</span>
+      </button>
     </div>
   </header>
 
@@ -1353,14 +571,14 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         <span class="sec-desc">状态不适或想试试新策略时，随手点一下 ✓ 或 ✕</span>
       </div>
       <div class="sec-actions">
-        <button class="btn-soft" id="toggleArchiveBtn" hidden="">已归档 (<span id="archiveCount">0</span>)</button>
+        <button class="btn-soft" id="toggleArchiveBtn" hidden>已归档 (<span id="archiveCount">0</span>)</button>
         <button class="btn-soft primary" id="addHypoBtn">＋ 新增假设</button>
       </div>
     </div>
 
-    <div class="hypo-grid" id="hypoGrid"><article class="card hypo-card" data-hid="h_rest_default"><div class="hypo-top"><h3 class="hypo-title" data-hact="edit" title="点击修改假设描述">状态失控/不适时，停下来静休 5–15 分钟有效</h3><div class="hypo-menu"><button class="icon-btn" data-hact="edit" title="编辑描述" aria-label="编辑描述"><svg viewBox="0 0 16 16"><path d="M11.3 2.5a1.5 1.5 0 0 1 2.2 2.2L5.3 12.9l-3 .8.8-3z"></path></svg></button><button class="icon-btn" data-hact="del" title="删除" aria-label="删除"><svg viewBox="0 0 16 16"><path d="M3.5 4.5h9M6 4.5V3h4v1.5M4.5 4.5l.7 8.5h5.6l.7-8.5"></path></svg></button></div></div><div class="hypo-mid"><div class="hypo-stat"><span class="hypo-frac">0 / 0</span><span class="hypo-rate neutral">待验证</span></div><div class="hypo-btns"><button class="fb-btn ok" data-hact="ok" title="有效 / 成功" aria-label="有效">✓</button><button class="fb-btn no" data-hact="no" title="无效 / 失败" aria-label="无效">✕</button></div></div><div class="hypo-foot"><button class="undo-btn" data-hact="undo" disabled="">↩ 撤销上一步</button><div class="hypo-acts"><button class="text-btn" data-hact="reset" disabled="">清零</button><button class="text-btn archive" data-hact="archive">已验证归档</button></div></div></article></div>
+    <div class="hypo-grid" id="hypoGrid"></div>
 
-    <div class="archive-drawer" id="archiveDrawer" hidden="">
+    <div class="archive-drawer" id="archiveDrawer" hidden>
       <div class="archive-head">
         <span>已验证并归档的假设</span>
         <button class="text-btn" id="closeArchiveBtn">收起</button>
@@ -1372,9 +590,9 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   <!-- 日期条（仅用于基本功每日记录） -->
   <div class="datenav">
     <button class="nav-arrow" id="prev" title="前一天" aria-label="前一天">‹</button>
-    <div><span id="dateText">11 月 27 日</span><span id="wdText">周五</span></div>
-    <button class="nav-arrow" id="next" title="后一天" aria-label="后一天" disabled="">›</button>
-    <button class="jump" id="todayJump" hidden="">回到今天</button>
+    <div><span id="dateText">—</span><span id="wdText"></span></div>
+    <button class="nav-arrow" id="next" title="后一天" aria-label="后一天">›</button>
+    <button class="jump" id="todayJump" hidden>回到今天</button>
   </div>
 
   <!-- 主体：基本功 -->
@@ -1385,13 +603,15 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           <svg viewBox="0 0 200 200" aria-hidden="true">
             <defs>
               <linearGradient id="sageGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#68C194"></stop>
-                <stop offset="100%" stop-color="#2F7455"></stop>
+                <stop offset="0%" stop-color="#68C194"/>
+                <stop offset="100%" stop-color="#2F7455"/>
               </linearGradient>
             </defs>
-            <circle cx="100" cy="100" r="80" fill="none" stroke="#EAE5DA" stroke-width="10"></circle>
-            <circle id="ringProg" cx="100" cy="100" r="80" fill="none" stroke="url(#sageGrad)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 100 100)" stroke-dasharray="502.65" stroke-dashoffset="502.65" style="stroke-dashoffset: 502.65;"></circle>
-            <g id="ticks"><circle cx="100.00" cy="37.00" r="3" fill="#E0DAD0"></circle><circle cx="137.03" cy="49.03" r="3" fill="#E0DAD0"></circle><circle cx="159.92" cy="80.53" r="3" fill="#E0DAD0"></circle><circle cx="159.92" cy="119.47" r="3" fill="#E0DAD0"></circle><circle cx="137.03" cy="150.97" r="3" fill="#E0DAD0"></circle><circle cx="100.00" cy="163.00" r="3" fill="#E0DAD0"></circle><circle cx="62.97" cy="150.97" r="3" fill="#E0DAD0"></circle><circle cx="40.08" cy="119.47" r="3" fill="#E0DAD0"></circle><circle cx="40.08" cy="80.53" r="3" fill="#E0DAD0"></circle><circle cx="62.97" cy="49.03" r="3" fill="#E0DAD0"></circle></g>
+            <circle cx="100" cy="100" r="80" fill="none" stroke="#EAE5DA" stroke-width="10"/>
+            <circle id="ringProg" cx="100" cy="100" r="80" fill="none"
+                    stroke="url(#sageGrad)" stroke-width="10" stroke-linecap="round"
+                    transform="rotate(-90 100 100)"/>
+            <g id="ticks"></g>
           </svg>
           <div class="score">
             <span id="scoreNum">0</span>
@@ -1404,30 +624,31 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
       <section class="card hist">
         <div class="hhead"><span>最近七日</span><span>点日期可回看</span></div>
-        <div class="chips" id="chips"><button class="chip cur" data-k="2026-11-27"><span class="cwd">五</span><span class="cday">27</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-26"><span class="cwd">四</span><span class="cday">26</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-25"><span class="cwd">三</span><span class="cday">25</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-24"><span class="cwd">二</span><span class="cday">24</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-23"><span class="cwd">一</span><span class="cday">23</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-22"><span class="cwd">日</span><span class="cday">22</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-21"><span class="cwd">六</span><span class="cday">21</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button></div>
+        <div class="chips" id="chips"></div>
       </section>
     </div>
 
-    <main class="card plaque editing" id="plaque">
+    <main class="card plaque" id="plaque">
       <div class="plaque-head">
         <div class="plaque-head-left">
-          <span id="headLabel">编辑条目</span>
-          <span id="headHint">点左侧数字直接改排名</span>
+          <span id="headLabel">今日条目</span>
+          <span id="headHint">点 ✓ 或 ✕</span>
         </div>
-        <button class="mini on" id="editBtn">完成</button>
+        <button class="mini" id="editBtn">调整条目</button>
       </div>
-      <div id="list"><div class="row" data-id="wake"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0" selected="">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>七点起床</h3><p>7:00 起床</p></div><div class="tools"><button data-act="up" title="上移" disabled=""><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="sleep"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1" selected="">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>十点后洗澡、入睡</h3><p>22:00 后洗澡，然后睡觉</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="med"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2" selected="">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>早晚按时吃药</h3><p>早上一次、晚上一次</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="warm"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3" selected="">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>注意保暖</h3><p>吹风机吹干头发、开浴霸、开大灯、出门穿厚一些</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="nap"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4" selected="">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>午后小睡</h3><p>13:00 之后睡午觉</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="rest"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5" selected="">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>注意休息，保养好</h3><p>累了就停，不硬撑</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="slow"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6" selected="">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>慢慢来，不急</h3><p>赶的时候提醒自己慢半拍</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="walk"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7" selected="">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>走路不看屏幕</h3><p>走路时手机收起来</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row is-inv" data-id="douyin"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8" selected="">9</option><option value="9">10</option></select><div class="txt"><h3>刷抖音B站<span class="tag">反向</span></h3><p>当天刷过短视频/直播（点 ✕ 表示没刷）</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="noai"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9" selected="">10</option></select><div class="txt"><h3>不问手机AI问题</h3><p>先自己想，不顺手问 AI</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移" disabled=""><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><button class="addRow" id="addRow">＋ 新增一项</button></div>
+      <div id="list"></div>
     </main>
   </div>
 
-  <!-- 数据保存与 AI 读取中心 -->
+  <!-- 数据保存、迁移与 AI 读取中心 -->
   <section class="card vault" aria-label="数据保存与AI读取">
     <div class="vault-info">
-      <h3 class="vault-title">把全部数据直接存进网页文件（方便随时丢给 AI 分析）</h3>
-      <p class="vault-desc">平时点选会实时存在浏览器里；点右侧「保存含数据的 HTML」，会把你的所有历史天数和假设验证直接写进文件本身。之后把这一个 HTML 发给 AI，它就能一次读完你几个月甚至一年的全部记录。</p>
+      <h3 class="vault-title">数据备份、旧记录迁移与 AI 读取</h3>
+      <p class="vault-desc">配置右上角「云同步」后，手机和电脑会自动通过你的私有 GitHub Gist 实时同步；点「保存含数据的 HTML」或「复制全量数据给 AI」可随时让 AI 一次读完你几个月的全部记录。</p>
       <span class="vault-stat" id="vaultStat">当前已累计：0 天记录 · 0 次假设反馈</span>
     </div>
     <div class="vault-btns">
+      <button class="btn-soft" id="importBtn">导入历史数据</button>
       <button class="btn-soft" id="copyAiBtn">复制全量数据给 AI</button>
       <button class="btn-soft primary" id="exportHtmlBtn">保存含数据的 HTML</button>
     </div>
@@ -1439,19 +660,52 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   </section>
 
   <div class="foot">
-    <span>日常点击实时存在当前浏览器中；定期点「保存含数据的 HTML」即可把数据永久固化进文件。</span>
+    <span>配置云同步后，点击即自动同步到你的私有 GitHub Gist，手机电脑打开同一网址即可互通。</span>
     <span>点「调整条目」可直接选择排名序号，一键排到第 1 位或任意位置。</span>
   </div>
 
 </div>
 
-<!-- 编辑基本功条目 -->
-<div class="modal" id="modal" hidden="">
+<!-- 云同步设置弹层 -->
+<div class="modal" id="syncModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true">
-    <div class="mhead"><span id="mTitle">修改条目</span><button id="mClose" aria-label="关闭">✕</button></div>
+    <div class="mhead"><span>GitHub 私有云同步</span><button id="smClose" aria-label="关闭">✕</button></div>
+    <label class="fl">GitHub Token（只需勾选 gist 权限）
+      <input type="password" id="smToken" placeholder="粘贴你的 ghp_... 密钥" autocomplete="off">
+    </label>
+    <p class="mhint">密钥只保存在当前设备浏览器里，不会上传到网页源码中。首次连接会自动创建一个只有你可见的私有 Gist；在手机上填同一个密钥，会自动识别并连上同一份数据。</p>
+    <div class="sync-msg" id="smMsg" hidden></div>
+    <div class="mfoot">
+      <button id="smDisconnect" class="danger" hidden>断开同步</button>
+      <button id="smPull" hidden>从云端拉取</button>
+      <button id="smCancel">关闭</button>
+      <button id="smSave" class="primary">连接并同步</button>
+    </div>
+  </div>
+</div>
+
+<!-- 导入旧历史数据弹层 -->
+<div class="modal" id="importModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="mhead"><span>导入历史数据</span><button id="imClose" aria-label="关闭">✕</button></div>
+    <label class="fl">把旧网页里「复制全量数据给 AI」得到的文本粘贴到下面：
+      <textarea id="imInput" placeholder='支持直接粘贴整段文本或 { "items": ... } JSON'></textarea>
+    </label>
+    <div class="sync-msg" id="imMsg" hidden></div>
+    <div class="mfoot">
+      <button id="imCancel">取消</button>
+      <button id="imOk" class="primary">导入并合并</button>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑基本功条目 -->
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="mhead"><span id="mTitle">新增条目</span><button id="mClose" aria-label="关闭">✕</button></div>
     <label class="fl">名称<input type="text" id="mName" maxlength="28" placeholder="例：走路不看屏幕" autocomplete="off"></label>
     <label class="fl">说明（可选）<input type="text" id="mNote" maxlength="60" placeholder="一句温和的提示就好" autocomplete="off"></label>
-    <label class="fl">排在第几位（按重要性）<select id="mPos"><option value="0">第 1 位（最重要）</option><option value="1">第 2 位</option><option value="2">第 3 位</option><option value="3">第 4 位</option><option value="4">第 5 位</option><option value="5">第 6 位</option><option value="6">第 7 位</option><option value="7">第 8 位</option><option value="8">第 9 位</option><option value="9" selected="">第 10 位（末尾）</option></select></label>
+    <label class="fl">排在第几位（按重要性）<select id="mPos"></select></label>
     <label class="mcheck"><input type="checkbox" id="mInv"><span>反向项：选「✕」才算做到（如「刷抖音B站」这类）</span></label>
     <div class="mfoot">
       <button id="mCancel">取消</button>
@@ -1461,7 +715,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 </div>
 
 <!-- 新增 / 编辑假设卡片 -->
-<div class="modal" id="hypoModal" hidden="">
+<div class="modal" id="hypoModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true">
     <div class="mhead"><span id="hmTitle">新增假设</span><button id="hmClose" aria-label="关闭">✕</button></div>
     <label class="fl">想验证的假设<input type="text" id="hmInput" maxlength="60" placeholder="例：状态失控/不适时，停下来静休 5–15 分钟有效" autocomplete="off"></label>
@@ -1473,7 +727,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 </div>
 
 <!-- 通用确认弹层 -->
-<div class="modal" id="confirm" hidden="">
+<div class="modal" id="confirm" hidden>
   <div class="sheet" role="dialog" aria-modal="true">
     <div class="mhead"><span id="cTitle">确认操作</span><button id="cClose" aria-label="关闭">✕</button></div>
     <div class="mtext" id="cText"></div>
@@ -1484,75 +738,8 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   </div>
 </div>
 
-<!-- 内嵌全量历史数据（保存含数据的 HTML 时自动写入这里，供本页面恢复与 AI 直接读取） -->
-<script id="embedded-data" type="application/json">{
-  "version": 1,
-  "exportedAt": "2026-11-27T00:09:47.904Z",
-  "items": [
-    {
-      "id": "wake",
-      "t": "七点起床",
-      "note": "7:00 起床"
-    },
-    {
-      "id": "sleep",
-      "t": "十点后洗澡、入睡",
-      "note": "22:00 后洗澡，然后睡觉"
-    },
-    {
-      "id": "med",
-      "t": "早晚按时吃药",
-      "note": "早上一次、晚上一次"
-    },
-    {
-      "id": "warm",
-      "t": "注意保暖",
-      "note": "吹风机吹干头发、开浴霸、开大灯、出门穿厚一些"
-    },
-    {
-      "id": "nap",
-      "t": "午后小睡",
-      "note": "13:00 之后睡午觉"
-    },
-    {
-      "id": "rest",
-      "t": "注意休息，保养好",
-      "note": "累了就停，不硬撑"
-    },
-    {
-      "id": "slow",
-      "t": "慢慢来，不急",
-      "note": "赶的时候提醒自己慢半拍"
-    },
-    {
-      "id": "walk",
-      "t": "走路不看屏幕",
-      "note": "走路时手机收起来"
-    },
-    {
-      "id": "douyin",
-      "t": "刷抖音B站",
-      "note": "当天刷过短视频/直播（点 ✕ 表示没刷）",
-      "inv": true,
-      "pos": "没刷抖音B站",
-      "neg": "刷了抖音B站"
-    },
-    {
-      "id": "noai",
-      "t": "不问手机AI问题",
-      "note": "先自己想，不顺手问 AI"
-    }
-  ],
-  "dailyRecords": {},
-  "hypotheses": [
-    {
-      "id": "h_rest_default",
-      "title": "状态失控/不适时，停下来静休 5–15 分钟有效",
-      "archived": false,
-      "history": []
-    }
-  ]
-}</script>
+<!-- 内嵌全量历史数据（保存含数据的 HTML 时自动写入这里） -->
+<script id="embedded-data" type="application/json">{}</script>
 
 <script>
 (function(){
@@ -1587,7 +774,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   var EMBEDDED = readEmbedded();
 
   // =========================================================
-  // 2. 极简“个人假设验证”计数器（无UI时间，底层隐形时间戳 + Undo栈）
+  // 2. 极简“个人假设验证”计数器
   // =========================================================
   var HYPO_KEY = "jibengong.hypotheses.v1";
   var DEFAULT_HYPOS = [
@@ -1627,9 +814,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     }
     return JSON.parse(JSON.stringify(DEFAULT_HYPOS));
   }
-  function saveHypos(){
+  function saveHypos(skipSync){
     try { localStorage.setItem(HYPO_KEY, JSON.stringify(hypos)); } catch(e){}
     updateVaultStat();
+    if (!skipSync) schedulePush();
   }
 
   var hypos = loadHypos();
@@ -1825,7 +1013,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   archiveList.addEventListener("click", handleHypoAction);
 
   // =========================================================
-  // 3. 基本功每日记录模块（支持从内嵌数据合并恢复 + 一键排位）
+  // 3. 基本功每日记录模块
   // =========================================================
   var DEFAULTS = [
     { id:"wake",  t:"七点起床",            note:"7:00 起床" },
@@ -1859,9 +1047,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     }
     return DEFAULTS.map(function(x){ return JSON.parse(JSON.stringify(x)); });
   }
-  function saveItems(){
+  function saveItems(skipSync){
     try { localStorage.setItem(IK, JSON.stringify(ITEMS)); } catch(e){}
     syncCounts();
+    if (!skipSync) schedulePush();
   }
   var ITEMS = loadItems();
 
@@ -1890,9 +1079,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   function today(){ var d = new Date(); d.setHours(0,0,0,0); return d; }
 
   var cur = keyOf(today());
-  function save(){
+  function save(skipSync){
     try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){}
     updateVaultStat();
+    if (!skipSync) schedulePush();
   }
   function stateOf(k){ return store[k] || {}; }
 
@@ -1940,6 +1130,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   var vaultStatEl = document.getElementById("vaultStat");
   var exportHtmlBtn = document.getElementById("exportHtmlBtn");
   var copyAiBtn = document.getElementById("copyAiBtn");
+  var importBtn = document.getElementById("importBtn");
 
   var R = 80, CIRC = 2 * Math.PI * R;
   prog.setAttribute("stroke-dasharray", CIRC.toFixed(2));
@@ -2105,7 +1296,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     chipsEl.innerHTML = html;
   }
 
-  // ---------- 基本功条目编辑弹层（含排位选择） ----------
+  // ---------- 基本功条目编辑弹层 ----------
   var modal   = document.getElementById("modal");
   var mTitle  = document.getElementById("mTitle");
   var mName   = document.getElementById("mName");
@@ -2138,7 +1329,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     if (it){
       populatePosSelect(ITEMS.length, indexOfId(it.id));
     } else {
-      populatePosSelect(ITEMS.length + 1, 0); // 新增时默认排第1位或任意自选
+      populatePosSelect(ITEMS.length + 1, 0);
     }
     modal.hidden = false;
     setTimeout(function(){ try { mName.focus(); mName.select(); } catch(e){} }, 40);
@@ -2222,14 +1413,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     }
   }
 
-  document.addEventListener("keydown", function(ev){
-    if (ev.key !== "Escape") return;
-    if (!modal.hidden) closeEditor();
-    if (!hypoModal.hidden) closeHypoModal();
-    if (!confirmBox.hidden) closeConfirm();
-  });
-
-  // ---------- 列表交互（含下拉直接调序） ----------
+  // ---------- 列表交互 ----------
   listEl.addEventListener("change", function(ev){
     var sel = ev.target.closest(".ord-select");
     if (!sel) return;
@@ -2346,11 +1530,12 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   });
 
   // =========================================================
-  // 4. 数据固化进 HTML 与一键导出给 AI
+  // 4. 数据固化、历史导入与 GitHub 私有 Gist 云同步
   // =========================================================
   function buildPayload(){
     return {
       version: 1,
+      updatedAt: Date.now(),
       exportedAt: new Date().toISOString(),
       items: ITEMS,
       dailyRecords: store,
@@ -2358,10 +1543,34 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     };
   }
 
+  function applyMergedData(data){
+    if (!data || typeof data !== "object") return false;
+    var changed = false;
+    if (Array.isArray(data.items) && data.items.length){
+      ITEMS = data.items.filter(function(x){ return x && x.id && x.t; });
+      saveItems(true);
+      changed = true;
+    }
+    if (data.dailyRecords && typeof data.dailyRecords === "object"){
+      Object.keys(data.dailyRecords).forEach(function(k){
+        if (data.dailyRecords[k] && Object.keys(data.dailyRecords[k]).length > 0){
+          store[k] = Object.assign({}, store[k] || {}, data.dailyRecords[k]);
+          changed = true;
+        }
+      });
+      save(true);
+    }
+    if (Array.isArray(data.hypotheses) && data.hypotheses.length){
+      hypos = normalizeHypos(data.hypotheses);
+      saveHypos(true);
+      changed = true;
+    }
+    return changed;
+  }
+
   exportHtmlBtn.addEventListener("click", function(){
     var payload = buildPayload();
     var embedEl = document.getElementById("embedded-data");
-    // 避免文本中意外出现闭合标签字符
     var escSlash = String.fromCharCode(60) + "\\/";
     embedEl.textContent = JSON.stringify(payload, null, 2).replace(/<\//g, escSlash);
     var htmlStr = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
@@ -2391,6 +1600,226 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     });
   });
 
+  // 导入旧历史数据弹层
+  var importModal = document.getElementById("importModal");
+  var imInput = document.getElementById("imInput");
+  var imMsg = document.getElementById("imMsg");
+  var imOk = document.getElementById("imOk");
+  var imCancel = document.getElementById("imCancel");
+  var imClose = document.getElementById("imClose");
+
+  function openImport(){
+    imInput.value = "";
+    imInput.classList.remove("bad");
+    imMsg.hidden = true;
+    importModal.hidden = false;
+    setTimeout(function(){ try { imInput.focus(); } catch(e){} }, 40);
+  }
+  function closeImport(){ importModal.hidden = true; }
+  importBtn.addEventListener("click", openImport);
+  imCancel.addEventListener("click", closeImport);
+  imClose.addEventListener("click", closeImport);
+
+  imOk.addEventListener("click", function(){
+    var raw = imInput.value.trim();
+    var idx = raw.indexOf("{");
+    if (idx > 0) raw = raw.slice(idx);
+    try {
+      var parsed = JSON.parse(raw);
+      if (!applyMergedData(parsed)) throw new Error("没有识别到有效记录");
+      renderHypos();
+      refresh();
+      schedulePush();
+      imMsg.textContent = "导入成功！已合并历史记录并同步。";
+      imMsg.className = "sync-msg ok";
+      imMsg.hidden = false;
+      setTimeout(closeImport, 900);
+    } catch(e){
+      imInput.classList.add("bad");
+      imMsg.textContent = "格式不对，请确保粘贴的是「复制全量数据给 AI」得到的完整内容。";
+      imMsg.className = "sync-msg err";
+      imMsg.hidden = false;
+    }
+  });
+
+  // GitHub 私有 Gist 云同步
+  var SYNC_KEY = "jibengong.sync.v1";
+  var GIST_FILE = "jibengong-cloud-data.json";
+  var GIST_DESC = "基本功与假设验证 · 云同步数据";
+
+  var syncPill = document.getElementById("syncPill");
+  var syncText = document.getElementById("syncText");
+  var syncModal = document.getElementById("syncModal");
+  var smToken = document.getElementById("smToken");
+  var smMsg = document.getElementById("smMsg");
+  var smSave = document.getElementById("smSave");
+  var smPull = document.getElementById("smPull");
+  var smDisconnect = document.getElementById("smDisconnect");
+  var smCancel = document.getElementById("smCancel");
+  var smClose = document.getElementById("smClose");
+
+  function loadSyncCfg(){
+    try {
+      var raw = localStorage.getItem(SYNC_KEY);
+      if (raw){
+        var c = JSON.parse(raw);
+        if (c && c.token) return { token: String(c.token), gistId: c.gistId ? String(c.gistId) : "" };
+      }
+    } catch(e){}
+    return { token: "", gistId: "" };
+  }
+  function saveSyncCfg(cfg){
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify(cfg)); } catch(e){}
+  }
+  var syncCfg = loadSyncCfg();
+  var pushTimer = null;
+
+  function setSyncUI(state, label){
+    syncPill.className = "sync-pill" + (state ? " " + state : "");
+    syncText.textContent = label;
+  }
+
+  function showSmMsg(kind, text){
+    smMsg.textContent = text;
+    smMsg.className = "sync-msg " + kind;
+    smMsg.hidden = false;
+  }
+
+  function ghFetch(url, opt){
+    var headers = Object.assign({
+      "Accept": "application/vnd.github+json",
+      "Authorization": "Bearer " + syncCfg.token
+    }, (opt && opt.headers) || {});
+    return fetch(url, Object.assign({}, opt || {}, { headers: headers })).then(function(res){
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    });
+  }
+
+  function findOrCreateGist(){
+    if (syncCfg.gistId) return Promise.resolve(syncCfg.gistId);
+    return ghFetch("https://api.github.com/gists?per_page=100").then(function(list){
+      for (var i = 0; i < list.length; i++){
+        if (list[i].files && list[i].files[GIST_FILE]){
+          syncCfg.gistId = list[i].id;
+          saveSyncCfg(syncCfg);
+          return syncCfg.gistId;
+        }
+      }
+      var files = {};
+      files[GIST_FILE] = { content: JSON.stringify(buildPayload(), null, 2) };
+      return ghFetch("https://api.github.com/gists", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: GIST_DESC, public: false, files: files })
+      }).then(function(created){
+        syncCfg.gistId = created.id;
+        saveSyncCfg(syncCfg);
+        return syncCfg.gistId;
+      });
+    });
+  }
+
+  function pullFromGist(quiet){
+    if (!syncCfg.token) return Promise.resolve(false);
+    setSyncUI("busy", "云同步：拉取中…");
+    return findOrCreateGist().then(function(gid){
+      return ghFetch("https://api.github.com/gists/" + gid);
+    }).then(function(gist){
+      var f = gist.files && gist.files[GIST_FILE];
+      if (f && f.content){
+        var cloud = JSON.parse(f.content);
+        if (cloud && typeof cloud === "object"){
+          applyMergedData(cloud);
+          renderHypos();
+          refresh();
+        }
+      }
+      setSyncUI("ok", "云同步：已连接 ✓");
+      if (!quiet) showSmMsg("ok", "已从私有 Gist 同步最新数据。");
+      return true;
+    }).catch(function(){
+      setSyncUI("err", "云同步：连接失败");
+      if (!quiet) showSmMsg("err", "同步失败，请检查网络或 Token 是否有效（需勾选 gist 权限）。");
+      return false;
+    });
+  }
+
+  function pushToGist(){
+    if (!syncCfg.token) return Promise.resolve(false);
+    setSyncUI("busy", "云同步：保存中…");
+    return findOrCreateGist().then(function(gid){
+      var files = {};
+      files[GIST_FILE] = { content: JSON.stringify(buildPayload(), null, 2) };
+      return ghFetch("https://api.github.com/gists/" + gid, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: files })
+      });
+    }).then(function(){
+      setSyncUI("ok", "云同步：已同步 ✓");
+      return true;
+    }).catch(function(){
+      setSyncUI("err", "云同步：同步失败");
+      return false;
+    });
+  }
+
+  function schedulePush(){
+    if (!syncCfg.token) return;
+    if (pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(function(){ pushToGist(); }, 550);
+  }
+
+  function openSyncModal(){
+    smToken.value = syncCfg.token || "";
+    smMsg.hidden = true;
+    smPull.hidden = !syncCfg.token;
+    smDisconnect.hidden = !syncCfg.token;
+    syncModal.hidden = false;
+  }
+  function closeSyncModal(){ syncModal.hidden = true; }
+
+  syncPill.addEventListener("click", openSyncModal);
+  smCancel.addEventListener("click", closeSyncModal);
+  smClose.addEventListener("click", closeSyncModal);
+
+  smSave.addEventListener("click", function(){
+    var tk = smToken.value.trim();
+    if (!tk){
+      smToken.classList.add("bad");
+      showSmMsg("err", "请先粘贴你的 GitHub Token。");
+      return;
+    }
+    smToken.classList.remove("bad");
+    syncCfg.token = tk;
+    saveSyncCfg(syncCfg);
+    pullFromGist(false).then(function(ok){
+      if (ok){
+        pushToGist();
+        smPull.hidden = false;
+        smDisconnect.hidden = false;
+      }
+    });
+  });
+
+  smPull.addEventListener("click", function(){ pullFromGist(false); });
+  smDisconnect.addEventListener("click", function(){
+    syncCfg = { token: "", gistId: "" };
+    saveSyncCfg(syncCfg);
+    setSyncUI("", "云同步：未配置");
+    closeSyncModal();
+  });
+
+  document.addEventListener("keydown", function(ev){
+    if (ev.key !== "Escape") return;
+    if (!modal.hidden) closeEditor();
+    if (!hypoModal.hidden) closeHypoModal();
+    if (!confirmBox.hidden) closeConfirm();
+    if (!syncModal.hidden) closeSyncModal();
+    if (!importModal.hidden) closeImport();
+  });
+
   function refresh(){
     renderHead();
     renderList();
@@ -2402,7 +1831,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
   renderHypos();
   refresh();
+  if (syncCfg.token){
+    pullFromGist(true);
+  }
 })();
 </script>
-
-</body></html>
+</body>
+</html>
