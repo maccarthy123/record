@@ -446,6 +446,19 @@
   .folder-head:hover{background:#EFECE3}
   .folder-name{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .folder-cnt{font-size:11.5px;color:var(--muted);font-weight:600}
+  .folder-right{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+  .f-act{
+    width:24px;height:24px;display:grid;place-items:center;padding:0;border:0;border-radius:7px;
+    background:transparent;color:var(--muted);cursor:pointer;font-size:12px;transition:.15s;
+  }
+  .f-act:hover{background:var(--card);color:var(--ink)}
+  .f-act.del:hover{background:var(--err-soft);color:var(--err)}
+  .note-folder-sel{
+    padding:6px 10px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card-soft);color:var(--ink-2);font-family:inherit;
+    font-size:12.5px;font-weight:600;cursor:pointer;outline:none;
+  }
+  .note-folder-sel:focus{border-color:var(--sage)}
   .note-items{display:flex;flex-direction:column;border-top:1px solid var(--line);background:var(--card)}
   .note-items[hidden]{display:none}
   .note-item{
@@ -727,6 +740,7 @@
         <div class="notes-toolbar">
           <input type="text" class="note-title-input" id="noteTitleInput" placeholder="输入标题（日记会自动带今天日期）" autocomplete="off">
           <div class="notes-tools">
+            <select class="note-folder-sel" id="noteFolderSel" title="移动到其他文件夹" aria-label="所属文件夹"></select>
             <span class="pos-hint" id="posHint">已自动记住位置</span>
             <button class="btn-soft" id="notePreviewBtn">预览</button>
             <button class="btn-soft" id="noteDelBtn">删除</button>
@@ -747,6 +761,7 @@
     </div>
     <div class="vault-btns">
       <button class="btn-soft" id="importBtn">导入历史数据</button>
+      <button class="btn-soft" id="exportMdBtn">导出全部笔记 .md</button>
       <button class="btn-soft" id="copyAiBtn">复制全量数据给 AI</button>
       <button class="btn-soft primary" id="exportHtmlBtn">保存含数据的 HTML</button>
     </div>
@@ -780,7 +795,7 @@
 <!-- 新建文件夹弹层 -->
 <div class="modal" id="folderModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true">
-    <div class="mhead"><span>新建笔记本文件夹</span><button id="fmClose" aria-label="关闭">✕</button></div>
+    <div class="mhead"><span id="fmTitle">新建笔记本文件夹</span><button id="fmClose" aria-label="关闭">✕</button></div>
     <label class="fl">文件夹名称
       <input type="text" id="fmInput" maxlength="20" placeholder="例：人物访谈摘录" autocomplete="off">
     </label>
@@ -1649,6 +1664,9 @@
   var newNoteBtn = document.getElementById("newNoteBtn");
   var newFolderBtn = document.getElementById("newFolderBtn");
   var noteTitleInput = document.getElementById("noteTitleInput");
+  var noteFolderSel = document.getElementById("noteFolderSel");
+  var fmTitle = document.getElementById("fmTitle");
+  var editingFolderId = null;
   var noteEditor = document.getElementById("noteEditor");
   var notePreview = document.getElementById("notePreview");
   var notePreviewBtn = document.getElementById("notePreviewBtn");
@@ -1726,7 +1744,11 @@
       html += '<div class="folder-box" data-fid="' + esc(f.id) + '">'
             +   '<div class="folder-head" data-fact="toggle">'
             +     '<span class="folder-name">' + (isOpen ? "▾ " : "▸ ") + esc(f.name) + '</span>'
-            +     '<span class="folder-cnt">' + list.length + '</span>'
+            +     '<div class="folder-right">'
+            +       '<span class="folder-cnt">' + list.length + '</span>'
+            +       '<button class="f-act" data-fact="rename" title="重命名文件夹" aria-label="重命名文件夹">✎</button>'
+            +       '<button class="f-act del" data-fact="delete" title="删除文件夹" aria-label="删除文件夹">✕</button>'
+            +     '</div>'
             +   '</div>'
             +   '<div class="note-items"' + (isOpen ? '' : ' hidden') + '>';
       if (!list.length){
@@ -1768,6 +1790,11 @@
     if (!n) return;
     noteTitleInput.value = n.title || "";
     noteEditor.value = n.content || "";
+    var fopts = "";
+    folders.forEach(function(f){
+      fopts += '<option value="' + esc(f.id) + '"' + (f.id === n.folderId ? ' selected' : '') + '>' + esc(f.name) + '</option>';
+    });
+    noteFolderSel.innerHTML = fopts;
     if (notePreviewMode){
       noteEditor.hidden = true;
       notePreview.hidden = false;
@@ -1791,11 +1818,47 @@
       renderActiveNote();
       return;
     }
+    var actBtn = ev.target.closest("[data-fact]");
+    if (actBtn && actBtn.getAttribute("data-fact") !== "toggle"){
+      ev.stopPropagation();
+      var box = actBtn.closest(".folder-box");
+      var fid = box.getAttribute("data-fid");
+      var fact = actBtn.getAttribute("data-fact");
+      var folderObj = null;
+      for (var fi = 0; fi < folders.length; fi++) if (folders[fi].id === fid) folderObj = folders[fi];
+      if (!folderObj) return;
+      if (fact === "rename"){
+        editingFolderId = fid;
+        fmTitle.textContent = "重命名文件夹";
+        fmOk.textContent = "保存";
+        fmInput.value = folderObj.name;
+        fmInput.classList.remove("bad");
+        folderModal.hidden = false;
+        setTimeout(function(){ try { fmInput.focus(); fmInput.select(); } catch(e){} }, 40);
+      } else if (fact === "delete"){
+        if (folders.length <= 1){
+          openConfirm("无法删除", "至少需要保留一个文件夹。", null, null);
+        } else {
+          var cnt = notes.filter(function(n){ return n.folderId === fid; }).length;
+          var msg = "确定删除文件夹「<b>" + esc(folderObj.name) + "</b>」吗？"
+                  + (cnt > 0 ? "<span>里面的 " + cnt + " 篇笔记也会一并删除（或先切换笔记移动到其他文件夹）。</span>" : "");
+          openConfirm("删除文件夹", msg, "删除", function(){
+            folders = folders.filter(function(f){ return f.id !== fid; });
+            notes = notes.filter(function(n){ return n.folderId !== fid; });
+            if (activeNoteId && !findNote(activeNoteId)) activeNoteId = notes[0] ? notes[0].id : null;
+            saveFolders(true);
+            saveNotes();
+            renderActiveNote();
+          });
+        }
+      }
+      return;
+    }
     var head = ev.target.closest(".folder-head");
     if (head){
-      var box = head.closest(".folder-box");
-      var fid = box.getAttribute("data-fid");
-      openFolders[fid] = !(openFolders[fid] !== false);
+      var box2 = head.closest(".folder-box");
+      var fid2 = box2.getAttribute("data-fid");
+      openFolders[fid2] = !(openFolders[fid2] !== false);
       renderNotesSidebar();
     }
   });
@@ -1853,22 +1916,43 @@
   });
 
   newFolderBtn.addEventListener("click", function(){
+    editingFolderId = null;
+    fmTitle.textContent = "新建笔记本文件夹";
+    fmOk.textContent = "创建";
     fmInput.value = "";
     fmInput.classList.remove("bad");
     folderModal.hidden = false;
     setTimeout(function(){ try { fmInput.focus(); } catch(e){} }, 40);
   });
-  function closeFolderModal(){ folderModal.hidden = true; }
+  function closeFolderModal(){ folderModal.hidden = true; editingFolderId = null; }
   fmClose.addEventListener("click", closeFolderModal);
   fmCancel.addEventListener("click", closeFolderModal);
   fmOk.addEventListener("click", function(){
     var name = fmInput.value.replace(/\s+/g, " ").trim();
     if (!name){ fmInput.classList.add("bad"); fmInput.focus(); return; }
-    var nf = { id: "f_" + Date.now().toString(36), name: name };
-    folders.push(nf);
-    openFolders[nf.id] = true;
-    saveFolders();
-    closeFolderModal();
+    if (editingFolderId){
+      for (var fi = 0; fi < folders.length; fi++){
+        if (folders[fi].id === editingFolderId){ folders[fi].name = name; break; }
+      }
+      saveFolders();
+      closeFolderModal();
+      renderActiveNote();
+    } else {
+      var nf = { id: "f_" + Date.now().toString(36), name: name };
+      folders.push(nf);
+      openFolders[nf.id] = true;
+      saveFolders();
+      closeFolderModal();
+      renderActiveNote();
+    }
+  });
+  noteFolderSel.addEventListener("change", function(){
+    var n = findNote(activeNoteId);
+    if (!n) return;
+    n.folderId = noteFolderSel.value;
+    n.updatedAt = Date.now();
+    openFolders[n.folderId] = true;
+    saveNotes();
     renderNotesSidebar();
   });
   fmInput.addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); fmOk.click(); } });
@@ -2011,6 +2095,32 @@
     var old = exportHtmlBtn.textContent;
     exportHtmlBtn.textContent = "已生成下载 ✓";
     setTimeout(function(){ exportHtmlBtn.textContent = old; }, 1800);
+  });
+
+  var exportMdBtn = document.getElementById("exportMdBtn");
+  exportMdBtn.addEventListener("click", function(){
+    var parts = ["# 日记与随手记汇总\n"];
+    folders.forEach(function(f){
+      var list = notes.filter(function(n){ return n.folderId === f.id; })
+                      .sort(function(a,b){ return (b.updatedAt || 0) - (a.updatedAt || 0); });
+      if (!list.length) return;
+      parts.push("## " + f.name + "\n");
+      list.forEach(function(n){
+        parts.push("### " + (n.title || "未命名") + "\n\n" + (n.content || "") + "\n");
+      });
+    });
+    var blob = new Blob([parts.join("\n")], { type: "text/markdown;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "日记与随手记汇总.md";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+    var old = exportMdBtn.textContent;
+    exportMdBtn.textContent = "已导出 .md ✓";
+    setTimeout(function(){ exportMdBtn.textContent = old; }, 1600);
   });
 
   copyAiBtn.addEventListener("click", function(){
