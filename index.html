@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>基本功 · 日常记录与假设验证</title>
+<title>基本功 · 日常记录、假设验证与随手记</title>
 <style>
   :root{
     --bg:#FAF8F3;
@@ -44,8 +44,8 @@
   }
 
   .page{
-    max-width:1060px;margin:0 auto;
-    padding:36px 24px 88px;
+    max-width:1080px;margin:0 auto;
+    padding:32px 24px 88px;
     animation:rise .55s cubic-bezier(.2,.7,.3,1) both;
   }
   @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -55,7 +55,7 @@
   /* ---------- 顶部欢迎区 ---------- */
   .topbar{
     display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
-    margin-bottom:28px;
+    margin-bottom:22px;
   }
   .brand{display:flex;flex-direction:column;gap:6px}
   .badge{
@@ -68,7 +68,7 @@
     content:"";width:7px;height:7px;border-radius:50%;background:var(--sage);
   }
   h1{
-    margin:4px 0 0;font-size:clamp(30px,4.5vw,42px);font-weight:750;
+    margin:4px 0 0;font-size:clamp(30px,4.5vw,40px);font-weight:750;
     letter-spacing:-.02em;line-height:1.15;color:var(--ink);
   }
   .subtitle{
@@ -97,6 +97,21 @@
   .sync-pill.busy .sync-dot{background:var(--amber)}
   .sync-pill.err .sync-dot{background:var(--err)}
   .sync-pill.err{border-color:#F0B9A8;color:var(--err);background:var(--err-soft)}
+
+  /* ---------- 主视图切换栏 ---------- */
+  .view-tabs{
+    display:inline-flex;gap:6px;padding:5px;margin-bottom:26px;
+    background:rgba(255,255,255,.85);border:1px solid var(--line);
+    border-radius:16px;box-shadow:var(--shadow);
+  }
+  .view-tab{
+    padding:9px 20px;border:0;border-radius:12px;cursor:pointer;
+    background:transparent;color:var(--ink-2);font-family:inherit;
+    font-size:14px;font-weight:650;transition:.18s ease;
+  }
+  .view-tab:hover{color:var(--ink);background:var(--card-soft)}
+  .view-tab.active{background:var(--sage);color:#FFF;box-shadow:0 4px 12px -3px rgba(61,139,104,.35)}
+  .view-panel[hidden]{display:none}
 
   /* ---------- 卡片通用 ---------- */
   .card{
@@ -367,7 +382,6 @@
     font-size:11px;font-weight:600;color:var(--amber);
   }
 
-  /* 勾与叉二元按钮 */
   .seg{display:flex;gap:8px;align-items:center}
   .seg button{
     width:46px;height:40px;display:grid;place-items:center;padding:0;cursor:pointer;
@@ -415,9 +429,74 @@
   .addRow:hover{background:var(--sage-soft);border-color:var(--sage)}
   .empty-note{padding:24px 0 8px;font-size:13.5px;color:var(--muted);text-align:center}
 
+  /* ---------- 日记与随手记（Markdown 笔记本） ---------- */
+  .notes-shell{
+    display:grid;grid-template-columns:270px 1fr;gap:20px;align-items:start;
+  }
+  .notes-sidebar{padding:16px}
+  .notes-sb-top{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .notes-sb-actions{display:flex;gap:6px}
+  .notes-sb-actions .btn-soft{flex:1;justify-content:center;padding:7px 10px;font-size:12.5px}
+  .folder-list{display:flex;flex-direction:column;gap:10px}
+  .folder-box{border:1px solid var(--line);border-radius:14px;background:var(--card-soft);overflow:hidden}
+  .folder-head{
+    display:flex;align-items:center;justify-content:space-between;gap:6px;
+    padding:9px 12px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink);
+  }
+  .folder-head:hover{background:#EFECE3}
+  .folder-name{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .folder-cnt{font-size:11.5px;color:var(--muted);font-weight:600}
+  .note-items{display:flex;flex-direction:column;border-top:1px solid var(--line);background:var(--card)}
+  .note-items[hidden]{display:none}
+  .note-item{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:9px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;
+    text-align:left;cursor:pointer;font-family:inherit;width:100%;transition:.15s;
+  }
+  .note-item:last-child{border-bottom:0}
+  .note-item:hover{background:var(--card-soft)}
+  .note-item.active{background:var(--sage-soft)}
+  .note-item-title{
+    font-size:13px;font-weight:600;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .note-item.active .note-item-title{color:var(--sage-hi)}
+  .note-item-sub{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .notes-main{padding:20px 24px;min-height:540px;display:flex;flex-direction:column;gap:14px}
+  .notes-toolbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    padding-bottom:14px;border-bottom:1px solid var(--line);
+  }
+  .note-title-input{
+    flex:1;min-width:200px;border:0;background:transparent;outline:none;
+    font-family:inherit;font-size:20px;font-weight:750;color:var(--ink);padding:4px 0;
+  }
+  .note-title-input::placeholder{color:var(--muted)}
+  .notes-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pos-hint{font-size:12px;color:var(--sage-hi);font-weight:600;background:var(--sage-soft);padding:4px 10px;border-radius:999px}
+  .note-editor{
+    width:100%;flex:1;min-height:420px;padding:16px 18px;
+    border:1.5px solid var(--line);border-radius:16px;background:var(--card-soft);
+    color:var(--ink);font-family:inherit;font-size:15px;line-height:1.85;
+    resize:vertical;outline:none;transition:.18s;
+  }
+  .note-editor:focus{border-color:var(--sage);background:#FFF}
+  .note-preview{
+    width:100%;flex:1;min-height:420px;padding:18px 20px;
+    border:1.5px solid var(--line);border-radius:16px;background:#FFF;
+    color:var(--ink);font-size:15px;line-height:1.85;overflow-y:auto;
+  }
+  .note-preview h1,.note-preview h2,.note-preview h3{margin:16px 0 8px;color:var(--ink)}
+  .note-preview p{margin:8px 0}
+  .note-preview blockquote{margin:10px 0;padding:8px 14px;border-left:3px solid var(--sage);background:var(--sage-soft);border-radius:0 10px 10px 0;color:var(--ink-2)}
+  .note-preview code{padding:2px 6px;border-radius:6px;background:var(--card-soft);font-size:13.5px}
+  .note-preview ul{padding-left:22px;margin:8px 0}
+  .mobile-sb-toggle{display:none}
+
   /* ---------- 数据保存与 AI 读取区 ---------- */
   .vault{
-    margin-top:24px;padding:20px 24px;
+    margin-top:26px;padding:20px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
     background:linear-gradient(135deg, #FFFFFF 0%, #F4F9F5 100%);
   }
@@ -426,25 +505,6 @@
   .vault-desc{font-size:13px;line-height:1.6;color:var(--ink-2);margin:0}
   .vault-stat{font-size:12px;font-weight:600;color:var(--sage-hi);margin-top:2px}
   .vault-btns{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-
-  /* ---------- 日记用文本 ---------- */
-  .ledger{margin-top:20px;padding:20px 24px 22px}
-  .lhead{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .lhead span{font-size:15px;font-weight:700;color:var(--ink)}
-  .copy{
-    padding:8px 18px;cursor:pointer;transition:.18s;border-radius:11px;
-    border:1px solid #BFE0CE;background:var(--sage-soft);
-    color:var(--sage-hi);font-family:inherit;font-size:13px;font-weight:600;
-  }
-  .copy:hover{background:var(--sage);color:#FFF;border-color:var(--sage)}
-  .copy.done{background:var(--sage);border-color:var(--sage);color:#FFF}
-  #preview{
-    margin:14px 0 0;padding:16px 18px;min-height:110px;border-radius:14px;
-    background:var(--card-soft);border:1px solid var(--line);
-    font-family:var(--sans);font-size:13.5px;line-height:1.9;
-    color:var(--ink);white-space:pre-wrap;word-break:break-word;
-  }
-  #preview.empty{font-size:13px;color:var(--muted)}
 
   .foot{
     margin-top:32px;padding-top:16px;border-top:1px solid var(--line);
@@ -525,6 +585,9 @@
     .chip{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px}
     .dots{justify-content:center;gap:3px}
     .dots i{width:5px;height:5px}
+    .notes-shell{grid-template-columns:1fr}
+    .mobile-sb-toggle{display:inline-flex}
+    .notes-sidebar.collapsed .folder-list{display:none}
   }
   @media (max-width:640px){
     .page{padding:24px 14px 68px}
@@ -535,7 +598,7 @@
     .ord,.ord-select{grid-area:ord;align-self:start;margin-top:2px}
     .txt{grid-area:txt}
     .seg,.tools{grid-area:seg;justify-self:end}
-    .ledger,.vault{padding:18px 16px}
+    .vault,.notes-main{padding:18px 16px}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
@@ -550,7 +613,7 @@
     <div class="brand">
       <span class="badge">轻松记录 · 慢慢来</span>
       <h1>基本功</h1>
-      <p class="subtitle">不带评判地观察自己——点一下 ✓ 或 ✕，把真实的反馈留下来。</p>
+      <p class="subtitle">不带评判地观察自己——点一下 ✓ 或 ✕，随时写下灵感与日记。</p>
     </div>
     <div class="top-right">
       <div class="top-pill">
@@ -563,89 +626,124 @@
     </div>
   </header>
 
-  <!-- 极简“个人假设验证”计数器（严格无日期/时间/倒计时展示） -->
-  <section class="hypo-section" aria-label="个人假设验证">
-    <div class="sec-head">
-      <div class="sec-title-wrap">
-        <h2 class="sec-title">个人假设验证</h2>
-        <span class="sec-desc">状态不适或想试试新策略时，随手点一下 ✓ 或 ✕</span>
+  <nav class="view-tabs" aria-label="主功能切换">
+    <button class="view-tab active" data-tab="daily">今日状态与假设</button>
+    <button class="view-tab" data-tab="notes">日记与随手记</button>
+  </nav>
+
+  <!-- 视图 1：今日状态与假设 -->
+  <div class="view-panel" id="panelDaily">
+    <section class="hypo-section" aria-label="个人假设验证">
+      <div class="sec-head">
+        <div class="sec-title-wrap">
+          <h2 class="sec-title">个人假设验证</h2>
+          <span class="sec-desc">状态不适或想试试新策略时，随手点一下 ✓ 或 ✕</span>
+        </div>
+        <div class="sec-actions">
+          <button class="btn-soft" id="toggleArchiveBtn" hidden>已归档 (<span id="archiveCount">0</span>)</button>
+          <button class="btn-soft primary" id="addHypoBtn">＋ 新增假设</button>
+        </div>
       </div>
-      <div class="sec-actions">
-        <button class="btn-soft" id="toggleArchiveBtn" hidden>已归档 (<span id="archiveCount">0</span>)</button>
-        <button class="btn-soft primary" id="addHypoBtn">＋ 新增假设</button>
+
+      <div class="hypo-grid" id="hypoGrid"></div>
+
+      <div class="archive-drawer" id="archiveDrawer" hidden>
+        <div class="archive-head">
+          <span>已验证并归档的假设</span>
+          <button class="text-btn" id="closeArchiveBtn">收起</button>
+        </div>
+        <div class="archive-list" id="archiveList"></div>
       </div>
+    </section>
+
+    <div class="datenav">
+      <button class="nav-arrow" id="prev" title="前一天" aria-label="前一天">‹</button>
+      <div><span id="dateText">—</span><span id="wdText"></span></div>
+      <button class="nav-arrow" id="next" title="后一天" aria-label="后一天">›</button>
+      <button class="jump" id="todayJump" hidden>回到今天</button>
     </div>
 
-    <div class="hypo-grid" id="hypoGrid"></div>
+    <div class="grid">
+      <div class="side">
+        <aside class="card seal">
+          <div class="ringwrap">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              <defs>
+                <linearGradient id="sageGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#68C194"/>
+                  <stop offset="100%" stop-color="#2F7455"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#EAE5DA" stroke-width="10"/>
+              <circle id="ringProg" cx="100" cy="100" r="80" fill="none"
+                      stroke="url(#sageGrad)" stroke-width="10" stroke-linecap="round"
+                      transform="rotate(-90 100 100)"/>
+              <g id="ticks"></g>
+            </svg>
+            <div class="score">
+              <span id="scoreNum">0</span>
+              <span class="of">/ <span id="scoreAll">10</span></span>
+            </div>
+          </div>
+          <div class="streak" id="streak"></div>
+          <div class="verdict" id="verdict">今天还没开始勾选</div>
+        </aside>
 
-    <div class="archive-drawer" id="archiveDrawer" hidden>
-      <div class="archive-head">
-        <span>已验证并归档的假设</span>
-        <button class="text-btn" id="closeArchiveBtn">收起</button>
+        <section class="card hist">
+          <div class="hhead"><span>最近七日</span><span>点日期可回看</span></div>
+          <div class="chips" id="chips"></div>
+        </section>
       </div>
-      <div class="archive-list" id="archiveList"></div>
-    </div>
-  </section>
 
-  <!-- 日期条（仅用于基本功每日记录） -->
-  <div class="datenav">
-    <button class="nav-arrow" id="prev" title="前一天" aria-label="前一天">‹</button>
-    <div><span id="dateText">—</span><span id="wdText"></span></div>
-    <button class="nav-arrow" id="next" title="后一天" aria-label="后一天">›</button>
-    <button class="jump" id="todayJump" hidden>回到今天</button>
+      <main class="card plaque" id="plaque">
+        <div class="plaque-head">
+          <div class="plaque-head-left">
+            <span id="headLabel">今日条目</span>
+            <span id="headHint">点 ✓ 或 ✕</span>
+          </div>
+          <button class="mini" id="editBtn">调整条目</button>
+        </div>
+        <div id="list"></div>
+      </main>
+    </div>
   </div>
 
-  <!-- 主体：基本功 -->
-  <div class="grid">
-    <div class="side">
-      <aside class="card seal">
-        <div class="ringwrap">
-          <svg viewBox="0 0 200 200" aria-hidden="true">
-            <defs>
-              <linearGradient id="sageGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#68C194"/>
-                <stop offset="100%" stop-color="#2F7455"/>
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="100" r="80" fill="none" stroke="#EAE5DA" stroke-width="10"/>
-            <circle id="ringProg" cx="100" cy="100" r="80" fill="none"
-                    stroke="url(#sageGrad)" stroke-width="10" stroke-linecap="round"
-                    transform="rotate(-90 100 100)"/>
-            <g id="ticks"></g>
-          </svg>
-          <div class="score">
-            <span id="scoreNum">0</span>
-            <span class="of">/ <span id="scoreAll">10</span></span>
+  <!-- 视图 2：日记与随手记（Markdown + 文件夹 + 记住阅读位置） -->
+  <div class="view-panel" id="panelNotes" hidden>
+    <div class="notes-shell">
+      <aside class="card notes-sidebar" id="notesSidebar">
+        <div class="notes-sb-top">
+          <button class="btn-soft primary" id="todayDiaryBtn" style="width:100%;justify-content:center">☀ 写今日日记</button>
+          <div class="notes-sb-actions">
+            <button class="btn-soft" id="newNoteBtn">＋ 新笔记</button>
+            <button class="btn-soft" id="newFolderBtn">＋ 文件夹</button>
           </div>
+          <button class="btn-soft mobile-sb-toggle" id="mobileSbToggle">收起目录</button>
         </div>
-        <div class="streak" id="streak"></div>
-        <div class="verdict" id="verdict">今天还没开始勾选</div>
+        <div class="folder-list" id="folderList"></div>
       </aside>
 
-      <section class="card hist">
-        <div class="hhead"><span>最近七日</span><span>点日期可回看</span></div>
-        <div class="chips" id="chips"></div>
-      </section>
-    </div>
-
-    <main class="card plaque" id="plaque">
-      <div class="plaque-head">
-        <div class="plaque-head-left">
-          <span id="headLabel">今日条目</span>
-          <span id="headHint">点 ✓ 或 ✕</span>
+      <main class="card notes-main">
+        <div class="notes-toolbar">
+          <input type="text" class="note-title-input" id="noteTitleInput" placeholder="输入标题（日记会自动带今天日期）" autocomplete="off">
+          <div class="notes-tools">
+            <span class="pos-hint" id="posHint">已自动记住位置</span>
+            <button class="btn-soft" id="notePreviewBtn">预览</button>
+            <button class="btn-soft" id="noteDelBtn">删除</button>
+          </div>
         </div>
-        <button class="mini" id="editBtn">调整条目</button>
-      </div>
-      <div id="list"></div>
-    </main>
+        <textarea class="note-editor" id="noteEditor" placeholder="直接写下此刻的想法、读书/看视频的感触，或手机语音转文字…&#10;&#10;下次刷新或打开，会自动停在你刚刚滚动和编辑的位置。"></textarea>
+        <div class="note-preview" id="notePreview" hidden></div>
+      </main>
+    </div>
   </div>
 
   <!-- 数据保存、迁移与 AI 读取中心 -->
   <section class="card vault" aria-label="数据保存与AI读取">
     <div class="vault-info">
       <h3 class="vault-title">数据备份、旧记录迁移与 AI 读取</h3>
-      <p class="vault-desc">配置右上角「云同步」后，手机和电脑会自动通过你的私有 GitHub Gist 实时同步；点「保存含数据的 HTML」或「复制全量数据给 AI」可随时让 AI 一次读完你几个月的全部记录。</p>
-      <span class="vault-stat" id="vaultStat">当前已累计：0 天记录 · 0 次假设反馈</span>
+      <p class="vault-desc">配置右上角「云同步」后，手机和电脑会自动通过你的私有 GitHub Gist 实时同步（包含基本功、假设验证与全部日记笔记）；随时点右侧按钮即可让 AI 一次读完全部历史数据。</p>
+      <span class="vault-stat" id="vaultStat">当前已累计：0 天记录 · 0 次假设反馈 · 0 篇笔记</span>
     </div>
     <div class="vault-btns">
       <button class="btn-soft" id="importBtn">导入历史数据</button>
@@ -654,14 +752,9 @@
     </div>
   </section>
 
-  <section class="card ledger">
-    <div class="lhead"><span>今日日记用文本</span><button class="copy" id="copyBtn">复制文本</button></div>
-    <pre id="preview" class="empty">勾选后自动生成，点「复制文本」粘进日记即可。</pre>
-  </section>
-
   <div class="foot">
-    <span>配置云同步后，点击即自动同步到你的私有 GitHub Gist，手机电脑打开同一网址即可互通。</span>
-    <span>点「调整条目」可直接选择排名序号，一键排到第 1 位或任意位置。</span>
+    <span>网页外观升级只需覆盖 index.html，数据存在私有 Gist 与浏览器里不会丢失。</span>
+    <span>日记会自动按日期建篇并记住你上次阅读/输入的光标位置，无需翻页。</span>
   </div>
 
 </div>
@@ -680,6 +773,20 @@
       <button id="smPull" hidden>从云端拉取</button>
       <button id="smCancel">关闭</button>
       <button id="smSave" class="primary">连接并同步</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新建文件夹弹层 -->
+<div class="modal" id="folderModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="mhead"><span>新建笔记本文件夹</span><button id="fmClose" aria-label="关闭">✕</button></div>
+    <label class="fl">文件夹名称
+      <input type="text" id="fmInput" maxlength="20" placeholder="例：人物访谈摘录" autocomplete="off">
+    </label>
+    <div class="mfoot">
+      <button id="fmCancel">取消</button>
+      <button id="fmOk" class="primary">创建</button>
     </div>
   </div>
 </div>
@@ -738,7 +845,7 @@
   </div>
 </div>
 
-<!-- 内嵌全量历史数据（保存含数据的 HTML 时自动写入这里） -->
+<!-- 内嵌全量历史数据 -->
 <script id="embedded-data" type="application/json">{}</script>
 
 <script>
@@ -774,7 +881,30 @@
   var EMBEDDED = readEmbedded();
 
   // =========================================================
-  // 2. 极简“个人假设验证”计数器
+  // 2. 顶部主视图切换（记住上次停留的页面）
+  // =========================================================
+  var TAB_KEY = "jibengong.tab.v1";
+  var viewTabs = document.querySelectorAll(".view-tab");
+  var panelDaily = document.getElementById("panelDaily");
+  var panelNotes = document.getElementById("panelNotes");
+
+  function switchTab(tab){
+    try { localStorage.setItem(TAB_KEY, tab); } catch(e){}
+    viewTabs.forEach(function(btn){
+      btn.classList.toggle("active", btn.getAttribute("data-tab") === tab);
+    });
+    panelDaily.hidden = (tab !== "daily");
+    panelNotes.hidden = (tab !== "notes");
+    if (tab === "notes") restoreNotePosition();
+  }
+  viewTabs.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      switchTab(btn.getAttribute("data-tab"));
+    });
+  });
+
+  // =========================================================
+  // 3. 极简“个人假设验证”计数器
   // =========================================================
   var HYPO_KEY = "jibengong.hypotheses.v1";
   var DEFAULT_HYPOS = [
@@ -1013,7 +1143,7 @@
   archiveList.addEventListener("click", handleHypoAction);
 
   // =========================================================
-  // 3. 基本功每日记录模块
+  // 4. 基本功每日记录模块
   // =========================================================
   var DEFAULTS = [
     { id:"wake",  t:"七点起床",            note:"7:00 起床" },
@@ -1109,7 +1239,6 @@
 
   var listEl   = document.getElementById("list");
   var plaqueEl = document.getElementById("plaque");
-  var previewEl= document.getElementById("preview");
   var scoreEl  = document.getElementById("scoreNum");
   var scoreAll = document.getElementById("scoreAll");
   var streakEl = document.getElementById("streak");
@@ -1118,7 +1247,6 @@
   var prevBtn  = document.getElementById("prev");
   var nextBtn  = document.getElementById("next");
   var jumpBtn  = document.getElementById("todayJump");
-  var copyBtn  = document.getElementById("copyBtn");
   var chipsEl  = document.getElementById("chips");
   var ticksG   = document.getElementById("ticks");
   var prog     = document.getElementById("ringProg");
@@ -1150,13 +1278,6 @@
     cntTop.textContent = n;
   }
   syncCounts();
-
-  function updateVaultStat(){
-    var days = Object.keys(store).filter(function(k){ return store[k] && Object.keys(store[k]).length > 0; }).length;
-    var clicks = 0;
-    hypos.forEach(function(h){ clicks += h.history.length; });
-    vaultStatEl.textContent = "当前已累计：" + days + " 天记录 · " + clicks + " 次假设反馈";
-  }
 
   function renderList(){
     var s = stateOf(cur), html = "";
@@ -1251,33 +1372,6 @@
     else { verdictEl.textContent = "已经完成 " + sc + " 项啦"; verdictEl.className = "verdict"; }
   }
 
-  function buildText(){
-    var d = dateOf(cur), s = stateOf(cur), answered = 0, miss = [];
-    var lines = [d.getFullYear() + "." + pad(d.getMonth()+1) + "." + pad(d.getDate())
-                 + " 周" + WD[d.getDay()] + "｜基本功 " + scoreOf(cur) + "/" + ITEMS.length];
-    ITEMS.forEach(function(it){
-      var v = s[it.id];
-      if (v === true || v === false) answered++;
-      var good = goodOf(it, v);
-      if ((v === true || v === false) && !good) miss.push(it.neg || it.t);
-      var label = (v === true ? (it.neg || it.t) : (it.pos || it.t));
-      lines.push((v === true || v === false ? (good ? "✓ " : "✕ ") : "· ") + label);
-    });
-    if (miss.length) lines.push("缺：" + miss.join("、"));
-    return { text: lines.join("\n"), answered: answered };
-  }
-
-  function renderPreview(){
-    var r = buildText();
-    if (r.answered === 0){
-      previewEl.textContent = "勾选后自动生成，点「复制文本」粘进日记即可。";
-      previewEl.className = "empty";
-    } else {
-      previewEl.textContent = r.text;
-      previewEl.className = "";
-    }
-  }
-
   function renderChips(){
     var html = "", base = new Date(today());
     for (var i = 0; i < 7; i++){
@@ -1326,11 +1420,8 @@
     mNote.value = it ? (it.note || "") : "";
     mInv.checked = it ? !!it.inv : false;
     mName.classList.remove("bad");
-    if (it){
-      populatePosSelect(ITEMS.length, indexOfId(it.id));
-    } else {
-      populatePosSelect(ITEMS.length + 1, 0);
-    }
+    if (it) populatePosSelect(ITEMS.length, indexOfId(it.id));
+    else populatePosSelect(ITEMS.length + 1, 0);
     modal.hidden = false;
     setTimeout(function(){ try { mName.focus(); mName.select(); } catch(e){} }, 40);
   }
@@ -1383,12 +1474,8 @@
   function openConfirm(title, htmlMsg, okLabel, cb){
     cTitle.textContent = title;
     cText.innerHTML = htmlMsg;
-    if (okLabel){
-      cOk.textContent = okLabel;
-      cOk.style.display = "";
-    } else {
-      cOk.style.display = "none";
-    }
+    if (okLabel){ cOk.textContent = okLabel; cOk.style.display = ""; }
+    else { cOk.style.display = "none"; }
     confirmCb = cb || null;
     confirmBox.hidden = false;
   }
@@ -1413,7 +1500,6 @@
     }
   }
 
-  // ---------- 列表交互 ----------
   listEl.addEventListener("change", function(ev){
     var sel = ev.target.closest(".ord-select");
     if (!sel) return;
@@ -1442,17 +1528,10 @@
     if (act){
       var i = indexOfId(id);
       if (i < 0) return;
-      if (act === "up" && i > 0){
-        moveItem(i, i - 1);
-        saveItems(); refresh();
-      } else if (act === "down" && i < ITEMS.length-1){
-        moveItem(i, i + 1);
-        saveItems(); refresh();
-      } else if (act === "edit"){
-        openEditor(ITEMS[i]);
-      } else if (act === "del"){
-        askDeleteItem(ITEMS[i]);
-      }
+      if (act === "up" && i > 0){ moveItem(i, i - 1); saveItems(); refresh(); }
+      else if (act === "down" && i < ITEMS.length-1){ moveItem(i, i + 1); saveItems(); refresh(); }
+      else if (act === "edit"){ openEditor(ITEMS[i]); }
+      else if (act === "del"){ askDeleteItem(ITEMS[i]); }
       return;
     }
 
@@ -1465,11 +1544,7 @@
     refresh();
   });
 
-  editBtn.addEventListener("click", function(){
-    editing = !editing;
-    refresh();
-  });
-
+  editBtn.addEventListener("click", function(){ editing = !editing; refresh(); });
   function shiftDay(n){
     var d = dateOf(cur); d.setDate(d.getDate() + n);
     var k = keyOf(d);
@@ -1480,7 +1555,6 @@
   prevBtn.addEventListener("click", function(){ shiftDay(-1); });
   nextBtn.addEventListener("click", function(){ shiftDay(1); });
   jumpBtn.addEventListener("click", function(){ cur = keyOf(today()); refresh(); });
-
   chipsEl.addEventListener("click", function(ev){
     var chip = ev.target.closest(".chip");
     if (!chip) return;
@@ -1488,58 +1562,379 @@
     refresh();
   });
 
-  function legacyCopy(text){
-    var ta = document.createElement("textarea");
-    ta.value = text;
-    ta.setAttribute("readonly", "");
-    ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
-    document.body.appendChild(ta);
-    ta.select();
-    var ok = false;
-    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
-    document.body.removeChild(ta);
-    return ok;
-  }
-  function copyText(text){
-    if (navigator.clipboard && window.isSecureContext){
-      return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return legacyCopy(text); });
+  // =========================================================
+  // 5. 日记与随手记模块（文件夹分类 + 自动日期 + 记住阅读/光标位置）
+  // =========================================================
+  var FOLDERS_KEY = "jibengong.folders.v1";
+  var NOTES_KEY   = "jibengong.notes.v1";
+  var POS_KEY     = "jibengong.notes.pos.v1";
+
+  var DEFAULT_FOLDERS = [
+    { id: "f_diary", name: "日常日记" },
+    { id: "f_book",  name: "读书笔记" },
+    { id: "f_media", name: "视频与文章感悟" },
+    { id: "f_inbox", name: "临时随手记" }
+  ];
+
+  function loadFolders(){
+    try {
+      var raw = localStorage.getItem(FOLDERS_KEY);
+      if (raw){
+        var a = JSON.parse(raw);
+        if (Array.isArray(a) && a.length) return a;
+      }
+    } catch(e){}
+    if (EMBEDDED && Array.isArray(EMBEDDED.folders) && EMBEDDED.folders.length){
+      try { localStorage.setItem(FOLDERS_KEY, JSON.stringify(EMBEDDED.folders)); } catch(e){}
+      return EMBEDDED.folders;
     }
-    return Promise.resolve(legacyCopy(text));
+    return JSON.parse(JSON.stringify(DEFAULT_FOLDERS));
   }
 
-  copyBtn.addEventListener("click", function(){
-    var r = buildText();
-    if (r.answered === 0){
-      copyBtn.textContent = "先勾选吧";
-      copyBtn.classList.add("done");
-      setTimeout(function(){ copyBtn.textContent = "复制文本"; copyBtn.classList.remove("done"); }, 1200);
+  function loadNotes(){
+    try {
+      var raw = localStorage.getItem(NOTES_KEY);
+      if (raw){
+        var a = JSON.parse(raw);
+        if (Array.isArray(a)) return a;
+      }
+    } catch(e){}
+    if (EMBEDDED && Array.isArray(EMBEDDED.notes)){
+      try { localStorage.setItem(NOTES_KEY, JSON.stringify(EMBEDDED.notes)); } catch(e){}
+      return EMBEDDED.notes;
+    }
+    return [];
+  }
+
+  var folders = loadFolders();
+  var notes = loadNotes();
+  var openFolders = {};
+  folders.forEach(function(f){ openFolders[f.id] = true; });
+
+  function loadNotePos(){
+    try {
+      var raw = localStorage.getItem(POS_KEY);
+      if (raw) return JSON.parse(raw) || {};
+    } catch(e){}
+    return {};
+  }
+  var notePosMap = loadNotePos();
+  var activeNoteId = notePosMap._lastNoteId || (notes[0] ? notes[0].id : null);
+  var notePreviewMode = false;
+
+  function saveFolders(skipSync){
+    try { localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders)); } catch(e){}
+    if (!skipSync) schedulePush();
+  }
+  function saveNotes(skipSync){
+    try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch(e){}
+    updateVaultStat();
+    if (!skipSync) schedulePush();
+  }
+  function savePosState(){
+    if (activeNoteId){
+      notePosMap._lastNoteId = activeNoteId;
+      notePosMap[activeNoteId] = {
+        scrollTop: noteEditor.scrollTop,
+        cursor: noteEditor.selectionStart || 0
+      };
+    }
+    try { localStorage.setItem(POS_KEY, JSON.stringify(notePosMap)); } catch(e){}
+  }
+
+  var folderListEl = document.getElementById("folderList");
+  var notesSidebar = document.getElementById("notesSidebar");
+  var mobileSbToggle = document.getElementById("mobileSbToggle");
+  var todayDiaryBtn = document.getElementById("todayDiaryBtn");
+  var newNoteBtn = document.getElementById("newNoteBtn");
+  var newFolderBtn = document.getElementById("newFolderBtn");
+  var noteTitleInput = document.getElementById("noteTitleInput");
+  var noteEditor = document.getElementById("noteEditor");
+  var notePreview = document.getElementById("notePreview");
+  var notePreviewBtn = document.getElementById("notePreviewBtn");
+  var noteDelBtn = document.getElementById("noteDelBtn");
+  var posHint = document.getElementById("posHint");
+
+  var folderModal = document.getElementById("folderModal");
+  var fmInput = document.getElementById("fmInput");
+  var fmOk = document.getElementById("fmOk");
+  var fmCancel = document.getElementById("fmCancel");
+  var fmClose = document.getElementById("fmClose");
+
+  function findNote(id){
+    for (var i = 0; i < notes.length; i++) if (notes[i].id === id) return notes[i];
+    return null;
+  }
+
+  function ensureActiveNote(){
+    if (activeNoteId && findNote(activeNoteId)) return;
+    if (notes.length > 0){
+      activeNoteId = notes[0].id;
+    } else {
+      var t = today();
+      var k = keyOf(t);
+      var first = {
+        id: "n_" + Date.now().toString(36),
+        folderId: folders[0] ? folders[0].id : "f_diary",
+        title: k + " 周" + WD[t.getDay()],
+        content: "",
+        updatedAt: Date.now()
+      };
+      notes.unshift(first);
+      activeNoteId = first.id;
+      saveNotes(true);
+    }
+  }
+
+  function renderMarkdown(md){
+    var lines = String(md || "").split(/\r?\n/);
+    var html = "", inList = false;
+    lines.forEach(function(line){
+      var s = esc(line);
+      s = s.replace(/`([^`]+)`/g, "<code>$1</code>")
+           .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      if (/^###\s+(.*)$/.test(s)){
+        if (inList){ html += "</ul>"; inList = false; }
+        html += "<h3>" + s.replace(/^###\s+/, "") + "</h3>";
+      } else if (/^##\s+(.*)$/.test(s)){
+        if (inList){ html += "</ul>"; inList = false; }
+        html += "<h2>" + s.replace(/^##\s+/, "") + "</h2>";
+      } else if (/^#\s+(.*)$/.test(s)){
+        if (inList){ html += "</ul>"; inList = false; }
+        html += "<h1>" + s.replace(/^#\s+/, "") + "</h1>";
+      } else if (/^&gt;\s?(.*)$/.test(s)){
+        if (inList){ html += "</ul>"; inList = false; }
+        html += "<blockquote>" + s.replace(/^&gt;\s?/, "") + "</blockquote>";
+      } else if (/^[-*]\s+(.*)$/.test(s)){
+        if (!inList){ html += "<ul>"; inList = true; }
+        html += "<li>" + s.replace(/^[-*]\s+/, "") + "</li>";
+      } else {
+        if (inList){ html += "</ul>"; inList = false; }
+        html += s.trim() ? "<p>" + s + "</p>" : "<p><br></p>";
+      }
+    });
+    if (inList) html += "</ul>";
+    return html || '<p style="color:var(--muted)">还没有内容，切回「编辑」即可开始写。</p>';
+  }
+
+  function renderNotesSidebar(){
+    var html = "";
+    folders.forEach(function(f){
+      var list = notes.filter(function(n){ return n.folderId === f.id; })
+                      .sort(function(a,b){ return (b.updatedAt || 0) - (a.updatedAt || 0); });
+      var isOpen = openFolders[f.id] !== false;
+      html += '<div class="folder-box" data-fid="' + esc(f.id) + '">'
+            +   '<div class="folder-head" data-fact="toggle">'
+            +     '<span class="folder-name">' + (isOpen ? "▾ " : "▸ ") + esc(f.name) + '</span>'
+            +     '<span class="folder-cnt">' + list.length + '</span>'
+            +   '</div>'
+            +   '<div class="note-items"' + (isOpen ? '' : ' hidden') + '>';
+      if (!list.length){
+        html += '<div style="padding:10px 12px;font-size:12px;color:var(--muted)">暂无记录</div>';
+      } else {
+        list.forEach(function(n){
+          var sub = (n.content || "").replace(/\s+/g, " ").trim().slice(0, 24) || "空白笔记";
+          html += '<button class="note-item' + (n.id === activeNoteId ? ' active' : '') + '" data-nid="' + esc(n.id) + '">'
+                +   '<div style="min-width:0;flex:1">'
+                +     '<div class="note-item-title">' + esc(n.title || "未命名") + '</div>'
+                +     '<div class="note-item-sub">' + esc(sub) + '</div>'
+                +   '</div>'
+                + '</button>';
+        });
+      }
+      html +=   '</div></div>';
+    });
+    folderListEl.innerHTML = html;
+  }
+
+  function restoreNotePosition(){
+    if (!activeNoteId) return;
+    var p = notePosMap[activeNoteId];
+    setTimeout(function(){
+      if (!p) return;
+      try {
+        if (typeof p.scrollTop === "number") noteEditor.scrollTop = p.scrollTop;
+        if (typeof p.cursor === "number"){
+          var pos = Math.min(p.cursor, noteEditor.value.length);
+          noteEditor.setSelectionRange(pos, pos);
+        }
+      } catch(e){}
+    }, 20);
+  }
+
+  function renderActiveNote(){
+    ensureActiveNote();
+    var n = findNote(activeNoteId);
+    if (!n) return;
+    noteTitleInput.value = n.title || "";
+    noteEditor.value = n.content || "";
+    if (notePreviewMode){
+      noteEditor.hidden = true;
+      notePreview.hidden = false;
+      notePreview.innerHTML = renderMarkdown(n.content);
+      notePreviewBtn.textContent = "继续编辑";
+    } else {
+      noteEditor.hidden = false;
+      notePreview.hidden = true;
+      notePreviewBtn.textContent = "预览";
+      restoreNotePosition();
+    }
+    renderNotesSidebar();
+  }
+
+  folderListEl.addEventListener("click", function(ev){
+    var itemBtn = ev.target.closest(".note-item");
+    if (itemBtn){
+      savePosState();
+      activeNoteId = itemBtn.getAttribute("data-nid");
+      savePosState();
+      renderActiveNote();
       return;
     }
-    copyText(r.text).then(function(ok){
-      copyBtn.textContent = ok ? "已复制" : "请手动复制";
-      copyBtn.classList.add("done");
-      if (!ok){
-        var range = document.createRange();
-        range.selectNodeContents(previewEl);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-      setTimeout(function(){ copyBtn.textContent = "复制文本"; copyBtn.classList.remove("done"); }, 1500);
+    var head = ev.target.closest(".folder-head");
+    if (head){
+      var box = head.closest(".folder-box");
+      var fid = box.getAttribute("data-fid");
+      openFolders[fid] = !(openFolders[fid] !== false);
+      renderNotesSidebar();
+    }
+  });
+
+  todayDiaryBtn.addEventListener("click", function(){
+    savePosState();
+    var t = today();
+    var k = keyOf(t);
+    var diaryTitle = k + " 周" + WD[t.getDay()];
+    var diaryFolderId = folders[0] ? folders[0].id : "f_diary";
+    var found = null;
+    for (var i = 0; i < notes.length; i++){
+      if (notes[i].title && notes[i].title.indexOf(k) === 0){ found = notes[i]; break; }
+    }
+    if (!found){
+      found = {
+        id: "n_" + Date.now().toString(36),
+        folderId: diaryFolderId,
+        title: diaryTitle,
+        content: "",
+        updatedAt: Date.now()
+      };
+      notes.unshift(found);
+      saveNotes();
+    }
+    openFolders[found.folderId] = true;
+    activeNoteId = found.id;
+    notePreviewMode = false;
+    savePosState();
+    renderActiveNote();
+    noteEditor.focus();
+  });
+
+  newNoteBtn.addEventListener("click", function(){
+    savePosState();
+    var curNote = findNote(activeNoteId);
+    var targetFolder = curNote ? curNote.folderId : (folders[0] ? folders[0].id : "f_diary");
+    var t = today();
+    var created = {
+      id: "n_" + Date.now().toString(36) + Math.floor(Math.random()*900+100),
+      folderId: targetFolder,
+      title: keyOf(t) + " 随手记",
+      content: "",
+      updatedAt: Date.now()
+    };
+    notes.unshift(created);
+    openFolders[targetFolder] = true;
+    activeNoteId = created.id;
+    notePreviewMode = false;
+    saveNotes();
+    savePosState();
+    renderActiveNote();
+    noteTitleInput.focus();
+    noteTitleInput.select();
+  });
+
+  newFolderBtn.addEventListener("click", function(){
+    fmInput.value = "";
+    fmInput.classList.remove("bad");
+    folderModal.hidden = false;
+    setTimeout(function(){ try { fmInput.focus(); } catch(e){} }, 40);
+  });
+  function closeFolderModal(){ folderModal.hidden = true; }
+  fmClose.addEventListener("click", closeFolderModal);
+  fmCancel.addEventListener("click", closeFolderModal);
+  fmOk.addEventListener("click", function(){
+    var name = fmInput.value.replace(/\s+/g, " ").trim();
+    if (!name){ fmInput.classList.add("bad"); fmInput.focus(); return; }
+    var nf = { id: "f_" + Date.now().toString(36), name: name };
+    folders.push(nf);
+    openFolders[nf.id] = true;
+    saveFolders();
+    closeFolderModal();
+    renderNotesSidebar();
+  });
+  fmInput.addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); fmOk.click(); } });
+
+  var noteSaveTimer = null;
+  function onNoteEdit(){
+    var n = findNote(activeNoteId);
+    if (!n) return;
+    n.title = noteTitleInput.value;
+    n.content = noteEditor.value;
+    n.updatedAt = Date.now();
+    savePosState();
+    posHint.textContent = "已记住当前位置";
+    if (noteSaveTimer) clearTimeout(noteSaveTimer);
+    noteSaveTimer = setTimeout(function(){
+      saveNotes();
+      renderNotesSidebar();
+    }, 350);
+  }
+  noteTitleInput.addEventListener("input", onNoteEdit);
+  noteEditor.addEventListener("input", onNoteEdit);
+  noteEditor.addEventListener("scroll", savePosState);
+  noteEditor.addEventListener("keyup", savePosState);
+  noteEditor.addEventListener("click", savePosState);
+
+  notePreviewBtn.addEventListener("click", function(){
+    notePreviewMode = !notePreviewMode;
+    renderActiveNote();
+  });
+
+  noteDelBtn.addEventListener("click", function(){
+    var n = findNote(activeNoteId);
+    if (!n) return;
+    openConfirm("删除笔记", "确定删除「<b>" + esc(n.title || "未命名") + "</b>」吗？", "删除", function(){
+      notes = notes.filter(function(x){ return x.id !== n.id; });
+      activeNoteId = notes[0] ? notes[0].id : null;
+      saveNotes();
+      renderActiveNote();
     });
   });
 
+  mobileSbToggle.addEventListener("click", function(){
+    var collapsed = notesSidebar.classList.toggle("collapsed");
+    mobileSbToggle.textContent = collapsed ? "展开目录" : "收起目录";
+  });
+
   // =========================================================
-  // 4. 数据固化、历史导入与 GitHub 私有 Gist 云同步
+  // 6. 数据固化、历史导入与 GitHub 私有 Gist 云同步
   // =========================================================
+  function updateVaultStat(){
+    var days = Object.keys(store).filter(function(k){ return store[k] && Object.keys(store[k]).length > 0; }).length;
+    var clicks = 0;
+    hypos.forEach(function(h){ clicks += h.history.length; });
+    vaultStatEl.textContent = "当前已累计：" + days + " 天基本功 · " + clicks + " 次假设反馈 · " + notes.length + " 篇笔记";
+  }
+
   function buildPayload(){
     return {
-      version: 1,
+      version: 2,
       updatedAt: Date.now(),
       exportedAt: new Date().toISOString(),
       items: ITEMS,
       dailyRecords: store,
-      hypotheses: hypos
+      hypotheses: hypos,
+      folders: folders,
+      notes: notes
     };
   }
 
@@ -1565,7 +1960,36 @@
       saveHypos(true);
       changed = true;
     }
+    if (Array.isArray(data.folders) && data.folders.length){
+      folders = data.folders;
+      saveFolders(true);
+      changed = true;
+    }
+    if (Array.isArray(data.notes)){
+      notes = data.notes;
+      saveNotes(true);
+      changed = true;
+    }
     return changed;
+  }
+
+  function legacyCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function copyText(text){
+    if (navigator.clipboard && window.isSecureContext){
+      return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return legacyCopy(text); });
+    }
+    return Promise.resolve(legacyCopy(text));
   }
 
   exportHtmlBtn.addEventListener("click", function(){
@@ -1578,7 +2002,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = "基本功.html";
+    a.download = "index.html";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1591,7 +2015,7 @@
 
   copyAiBtn.addEventListener("click", function(){
     var payload = buildPayload();
-    var text = "以下是我的「基本功」与「个人假设验证」完整历史数据（JSON），请帮我分析近况、规律与改进建议：\n\n"
+    var text = "以下是我的「基本功」「个人假设验证」与「日记笔记」完整历史数据（JSON），请帮我分析近况、规律与改进建议：\n\n"
              + JSON.stringify(payload, null, 2);
     copyText(text).then(function(ok){
       var old = copyAiBtn.textContent;
@@ -1600,7 +2024,6 @@
     });
   });
 
-  // 导入旧历史数据弹层
   var importModal = document.getElementById("importModal");
   var imInput = document.getElementById("imInput");
   var imMsg = document.getElementById("imMsg");
@@ -1629,6 +2052,7 @@
       if (!applyMergedData(parsed)) throw new Error("没有识别到有效记录");
       renderHypos();
       refresh();
+      renderActiveNote();
       schedulePush();
       imMsg.textContent = "导入成功！已合并历史记录并同步。";
       imMsg.className = "sync-msg ok";
@@ -1678,7 +2102,6 @@
     syncPill.className = "sync-pill" + (state ? " " + state : "");
     syncText.textContent = label;
   }
-
   function showSmMsg(kind, text){
     smMsg.textContent = text;
     smMsg.className = "sync-msg " + kind;
@@ -1733,6 +2156,7 @@
           applyMergedData(cloud);
           renderHypos();
           refresh();
+          renderActiveNote();
         }
       }
       setSyncUI("ok", "云同步：已连接 ✓");
@@ -1818,19 +2242,26 @@
     if (!confirmBox.hidden) closeConfirm();
     if (!syncModal.hidden) closeSyncModal();
     if (!importModal.hidden) closeImport();
+    if (!folderModal.hidden) closeFolderModal();
   });
 
   function refresh(){
     renderHead();
     renderList();
     renderMeta();
-    renderPreview();
     renderChips();
     updateVaultStat();
   }
 
   renderHypos();
   refresh();
+  renderActiveNote();
+
+  try {
+    var savedTab = localStorage.getItem(TAB_KEY);
+    if (savedTab === "notes") switchTab("notes");
+  } catch(e){}
+
   if (syncCfg.token){
     pullFromGist(true);
   }
