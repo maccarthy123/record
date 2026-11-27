@@ -2244,7 +2244,7 @@
   }
 
   function ghFetch(url, opt){
-    var tk = (syncCfg.token || "").trim();
+    var tk = (syncCfg.token || "").replace(/[^\x21-\x7E]/g, "");
     var headers = Object.assign({
       "Accept": "application/vnd.github+json",
       "Authorization": "Bearer " + tk
@@ -2310,9 +2310,9 @@
               renderActiveNote();
             }
           } else if (localUpdatedAt > cloudTs){
-            return pushToGist().then(function(){
-              if (!quiet) showSmMsg("ok", "本地记录更新，已自动推送到云端。");
-              return true;
+            return pushToGist().then(function(pushed){
+              if (pushed && !quiet) showSmMsg("ok", "本地记录更新，已自动推送到云端。");
+              return pushed;
             });
           }
         }
@@ -2390,12 +2390,14 @@
   smClose.addEventListener("click", closeSyncModal);
 
   smSave.addEventListener("click", function(){
-    var tk = smToken.value.trim();
+    var rawTk = smToken.value;
+    var tk = rawTk.replace(/[^\x21-\x7E]/g, "");
     if (!tk){
       smToken.classList.add("bad");
-      showSmMsg("err", "请先粘贴你的 GitHub Token。");
+      showSmMsg("err", "密钥为空或只包含非英文字符，请重新粘贴 ghp_ 开头的纯英文密钥。");
       return;
     }
+    smToken.value = tk;
     smToken.classList.remove("bad");
     if (syncCfg.token !== tk) syncCfg.gistId = "";
     syncCfg.token = tk;
