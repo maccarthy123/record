@@ -894,6 +894,13 @@
     } catch(e){ return null; }
   }
   var EMBEDDED = readEmbedded();
+  var UPDATED_KEY = "jibengong.updatedAt.v1";
+  var localUpdatedAt = 0;
+  try { localUpdatedAt = parseInt(localStorage.getItem(UPDATED_KEY) || "0", 10) || 0; } catch(e){ localUpdatedAt = 0; }
+  function touchLocal(){
+    localUpdatedAt = Date.now();
+    try { localStorage.setItem(UPDATED_KEY, String(localUpdatedAt)); } catch(e){}
+  }
 
   // =========================================================
   // 2. 顶部主视图切换（记住上次停留的页面）
@@ -962,7 +969,7 @@
   function saveHypos(skipSync){
     try { localStorage.setItem(HYPO_KEY, JSON.stringify(hypos)); } catch(e){}
     updateVaultStat();
-    if (!skipSync) schedulePush();
+    if (!skipSync){ touchLocal(); schedulePush(); }
   }
 
   var hypos = loadHypos();
@@ -1195,7 +1202,7 @@
   function saveItems(skipSync){
     try { localStorage.setItem(IK, JSON.stringify(ITEMS)); } catch(e){}
     syncCounts();
-    if (!skipSync) schedulePush();
+    if (!skipSync){ touchLocal(); schedulePush(); }
   }
   var ITEMS = loadItems();
 
@@ -1227,7 +1234,7 @@
   function save(skipSync){
     try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){}
     updateVaultStat();
-    if (!skipSync) schedulePush();
+    if (!skipSync){ touchLocal(); schedulePush(); }
   }
   function stateOf(k){ return store[k] || {}; }
 
@@ -1639,12 +1646,12 @@
 
   function saveFolders(skipSync){
     try { localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders)); } catch(e){}
-    if (!skipSync) schedulePush();
+    if (!skipSync){ touchLocal(); schedulePush(); }
   }
   function saveNotes(skipSync){
     try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch(e){}
     updateVaultStat();
-    if (!skipSync) schedulePush();
+    if (!skipSync){ touchLocal(); schedulePush(); }
   }
   function savePosState(){
     if (activeNoteId){
@@ -1692,10 +1699,10 @@
       var t = today();
       var k = keyOf(t);
       var first = {
-        id: "n_" + Date.now().toString(36),
+        id: "n_diary_main",
         folderId: folders[0] ? folders[0].id : "f_diary",
-        title: k + " 周" + WD[t.getDay()],
-        content: "",
+        title: "我的日记本",
+        content: "## " + k + " 周" + WD[t.getDay()] + "\n\n",
         updatedAt: Date.now()
       };
       notes.unshift(first);
@@ -1867,29 +1874,47 @@
     savePosState();
     var t = today();
     var k = keyOf(t);
-    var diaryTitle = k + " 周" + WD[t.getDay()];
+    var heading = "## " + k + " 周" + WD[t.getDay()];
     var diaryFolderId = folders[0] ? folders[0].id : "f_diary";
-    var found = null;
-    for (var i = 0; i < notes.length; i++){
-      if (notes[i].title && notes[i].title.indexOf(k) === 0){ found = notes[i]; break; }
+    var diary = findNote("n_diary_main");
+    if (!diary){
+      for (var i = 0; i < notes.length; i++){
+        if (notes[i].title === "我的日记本"){ diary = notes[i]; break; }
+      }
     }
-    if (!found){
-      found = {
-        id: "n_" + Date.now().toString(36),
+    if (!diary){
+      diary = {
+        id: "n_diary_main",
         folderId: diaryFolderId,
-        title: diaryTitle,
-        content: "",
+        title: "我的日记本",
+        content: heading + "\n\n",
         updatedAt: Date.now()
       };
-      notes.unshift(found);
-      saveNotes();
+      notes.unshift(diary);
+    } else {
+      var curTxt = diary.content || "";
+      if (curTxt.indexOf(heading) === -1){
+        var sep = curTxt.trim() ? "\n\n" : "";
+        diary.content = curTxt.replace(/\s+$/, "") + sep + heading + "\n\n";
+      } else if (!/\n$/.test(curTxt)){
+        diary.content = curTxt + "\n";
+      }
+      diary.updatedAt = Date.now();
     }
-    openFolders[found.folderId] = true;
-    activeNoteId = found.id;
+    openFolders[diary.folderId] = true;
+    activeNoteId = diary.id;
     notePreviewMode = false;
-    savePosState();
+    saveNotes();
     renderActiveNote();
-    noteEditor.focus();
+    setTimeout(function(){
+      try {
+        noteEditor.focus();
+        var end = noteEditor.value.length;
+        noteEditor.setSelectionRange(end, end);
+        noteEditor.scrollTop = noteEditor.scrollHeight;
+        savePosState();
+      } catch(e){}
+    }, 30);
   });
 
   newNoteBtn.addEventListener("click", function(){
@@ -1957,7 +1982,7 @@
   });
   fmInput.addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); fmOk.click(); } });
 
-  var noteSaveTimer = null;
+  var noteRenderTimer = null;
   function onNoteEdit(){
     var n = findNote(activeNoteId);
     if (!n) return;
@@ -1965,12 +1990,12 @@
     n.content = noteEditor.value;
     n.updatedAt = Date.now();
     savePosState();
-    posHint.textContent = "已记住当前位置";
-    if (noteSaveTimer) clearTimeout(noteSaveTimer);
-    noteSaveTimer = setTimeout(function(){
-      saveNotes();
+    saveNotes();
+    posHint.textContent = "已保存 · 已记住位置";
+    if (noteRenderTimer) clearTimeout(noteRenderTimer);
+    noteRenderTimer = setTimeout(function(){
       renderNotesSidebar();
-    }, 350);
+    }, 300);
   }
   noteTitleInput.addEventListener("input", onNoteEdit);
   noteEditor.addEventListener("input", onNoteEdit);
@@ -2253,7 +2278,7 @@
     });
   }
 
-  function pullFromGist(quiet){
+  function pullFromGist(quiet, forceCloud){
     if (!syncCfg.token) return Promise.resolve(false);
     setSyncUI("busy", "云同步：拉取中…");
     return findOrCreateGist().then(function(gid){
@@ -2263,10 +2288,24 @@
       if (f && f.content){
         var cloud = JSON.parse(f.content);
         if (cloud && typeof cloud === "object"){
-          applyMergedData(cloud);
-          renderHypos();
-          refresh();
-          renderActiveNote();
+          var cloudTs = Number(cloud.updatedAt || 0);
+          if (forceCloud || localUpdatedAt === 0 || cloudTs > localUpdatedAt){
+            applyMergedData(cloud);
+            if (cloudTs > localUpdatedAt){
+              localUpdatedAt = cloudTs;
+              try { localStorage.setItem(UPDATED_KEY, String(localUpdatedAt)); } catch(e){}
+            }
+            renderHypos();
+            refresh();
+            if (document.activeElement !== noteEditor && document.activeElement !== noteTitleInput){
+              renderActiveNote();
+            }
+          } else if (localUpdatedAt > cloudTs){
+            return pushToGist().then(function(){
+              if (!quiet) showSmMsg("ok", "本地记录更新，已自动推送到云端。");
+              return true;
+            });
+          }
         }
       }
       setSyncUI("ok", "云同步：已连接 ✓");
@@ -2328,16 +2367,15 @@
     smToken.classList.remove("bad");
     syncCfg.token = tk;
     saveSyncCfg(syncCfg);
-    pullFromGist(false).then(function(ok){
+    pullFromGist(false, false).then(function(ok){
       if (ok){
-        pushToGist();
         smPull.hidden = false;
         smDisconnect.hidden = false;
       }
     });
   });
 
-  smPull.addEventListener("click", function(){ pullFromGist(false); });
+  smPull.addEventListener("click", function(){ pullFromGist(false, true); });
   smDisconnect.addEventListener("click", function(){
     syncCfg = { token: "", gistId: "" };
     saveSyncCfg(syncCfg);
