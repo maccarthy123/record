@@ -1,0 +1,2408 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIxNDY1NzI4MDc3NDAwMDczNjA1NyIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjX2MwYTU3MGQxZjcyZWJhMGNfMWFjMDIyZTZf5Z-65pys5YqfLmh0bWwtMjQzIn0sImV4cCI6MTc5NTc0MTQ5MywiaWF0IjoxNzk1NzM3ODkzLCJhbGciOiJSUzI1NiJ9.NZODMjJwy13-t4xzZp7LYFAOHFw9-ag61Kv36SvWVaLRiTtwgOwLiMyvBvDrHaN2_Hr0AmQ2MEKAoOLqhZPAbkLB7mch2gXBXGh7yF_ZJTtBmQniqkpRS3jVvjwH9ZkT8Bu7Ux8eMmftmmMu_AnY6C70GYz9Xq94SfyVB-J134W6xCrRUxhOXRXRurEMCtt4-KkbQ4Wm-8FBuMtF7ipl-ligf5T9eiwe0bCfaCBtU3GP2W-ptjZOdg-FFJw1DNAEDOkmaCLpUxz_Tg-1xbQ70ZL5agBWU6D_K-qrv4iDA0Vg_LStVbvThKdeupyOZtYNVyUuxveYfAup4tmTZ54-3Q","c_c0a570d1f72eba0c_1ac022e6_基本功.html-243")</script><script data-bard-client-injected="true">
+  document.addEventListener('input', (event) => {
+    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
+      const clonedDoc = document.cloneNode(true);
+      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
+      injectedScripts.forEach(el => el.remove());
+      window.parent.postMessage({
+        type: 'inlineEdit',
+        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
+      }, '*');
+    }
+  });
+</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const SCROLL_KEYS = new Set([
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
+  ]);
+  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
+
+  function isTextEntryTarget(target) {
+    if (!target) return false;
+    const tagName = target.tagName;
+    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
+        tagName === 'SELECT' || target.isContentEditable === true;
+  }
+
+  // An element absorbs the key only if it both overflows on the axis being
+  // scrolled and is configured to scroll on that axis. The cheap dimension
+  // test runs first because getComputedStyle forces a style recalc, and this
+  // runs on every keypress. Each axis is read from its own longhand: the
+  // 'overflow' shorthand serializes as two values when the axes differ, which
+  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
+  function canScroll(node, horizontal) {
+    const overflows = horizontal ? node.scrollWidth > node.clientWidth
+                                 : node.scrollHeight > node.clientHeight;
+    if (!overflows) return false;
+    const style = window.getComputedStyle(node);
+    const overflow = horizontal ? style.overflowX : style.overflowY;
+    return overflow === 'auto' || overflow === 'scroll';
+  }
+
+  // Walks up from the event target so nested scrollers keep their behavior.
+  // <body> is included because pages that pin the root height make it the
+  // scroll container.
+  function hasScrollableAncestor(target, horizontal) {
+    let node = target;
+    while (node && node !== document.documentElement) {
+      if (canScroll(node, horizontal)) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  function rootCanScroll(horizontal) {
+    const scroller = document.scrollingElement || document.documentElement;
+    if (!scroller) return false;
+    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
+    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
+                      : scroller.scrollHeight > window.innerHeight + 1;
+  }
+
+  window.addEventListener('keydown', function(event) {
+    if (!SCROLL_KEYS.has(event.key)) return;
+    if (event.defaultPrevented) return;
+    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
+    // reserved for shortcuts, so none of them are scroll intent.
+    if (event.altKey || event.metaKey || event.ctrlKey) return;
+
+    const target = event.target;
+    if (isTextEntryTarget(target)) return;
+
+    // Anything that can still absorb the scroll gets to keep it.
+    const horizontal = HORIZONTAL_KEYS.has(event.key);
+    if (rootCanScroll(horizontal)) return;
+    if (hasScrollableAncestor(target, horizontal)) return;
+
+    event.preventDefault();
+  }, {capture: true, passive: false});
+})();</script><script data-bard-client-injected="true">(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script data-bard-client-injected="true">
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
+function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
+
+ Copyright The Closure Library Authors.
+ SPDX-License-Identifier: Apache-2.0
+*/
+function A(b,d){function e(){}e.prototype=d.prototype;b.i=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
+let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
+null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.extensions="";var l=0,t=null,r=null,q=[],F=new TextEncoder,
+G=new TextDecoder;c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*
+16|0;return(f==="x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;
+(g=t)==null||g.postMessage(a)}};Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
+(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
+url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
+</script><script data-bard-client-injected="true">((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function() {
+  const OVERLAY_SELECTOR =
+    'dialog[open], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
+
+  function isVisibleOverlay(element) {
+    if (element.closest('[hidden], [aria-hidden="true"], [inert]')) {
+      return false;
+    }
+    if (window.getComputedStyle(element).visibility === 'hidden') {
+      return false;
+    }
+    for (let cur = element; cur; cur = cur.parentElement) {
+      if (window.getComputedStyle(cur).display === 'none') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function hasOpenOverlay() {
+    const candidates = document.querySelectorAll(OVERLAY_SELECTOR);
+    for (let i = 0; i < candidates.length; i++) {
+      if (isVisibleOverlay(candidates[i])) {
+        return true;
+      }
+    }
+    try {
+      if (document.querySelector('[popover]:popover-open')) {
+        return true;
+      }
+    } catch (e) {
+      // Ignore engines that do not support :popover-open.
+    }
+    return false;
+  }
+
+  function isNonEmptySearchInput(target) {
+    return (
+      Boolean(target) &&
+      target.tagName === 'INPUT' &&
+      typeof target.type === 'string' &&
+      target.type.toLowerCase() === 'search' &&
+      typeof target.value === 'string' &&
+      target.value.length > 0
+    );
+  }
+
+  function shouldIgnoreEscape(event) {
+    return (
+      event.key !== 'Escape' ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.isComposing ||
+      event.repeat ||
+      event.keyCode === 229 ||
+      isNonEmptySearchInput(event.target)
+    );
+  }
+
+  let shouldIgnoreCaptureState = false;
+
+  window.addEventListener(
+    'keydown',
+    function(event) {
+      if (event.key === 'Escape') {
+        shouldIgnoreCaptureState =
+          hasOpenOverlay() || isNonEmptySearchInput(event.target);
+      }
+    },
+    {capture: true},
+  );
+
+  window.addEventListener('keydown', function(event) {
+    if (
+      shouldIgnoreEscape(event) ||
+      event.defaultPrevented ||
+      shouldIgnoreCaptureState
+    ) {
+      return;
+    }
+    const wasBlockedOnCapture = shouldIgnoreCaptureState;
+    queueMicrotask(function() {
+      if (event.defaultPrevented || wasBlockedOnCapture) {
+        return;
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({'type': 'escapeKey'}, '*');
+      }
+    });
+  });
+})();</script><script data-bard-client-injected="true">(function() {
+  function normalizeSlug(str) {
+    try {
+      return str
+        .trim()
+        .toLowerCase()
+        .replace(/[^p{L}p{N}s_-]/gu, '')
+        .replace(/s+/g, '-');
+    } catch (e) {
+      return str
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9s_-]/g, '')
+        .replace(/s+/g, '-');
+    }
+  }
+
+  function findTargetElement(hash) {
+    if (!hash || hash === '#') {
+      return null;
+    }
+    const rawId = hash.startsWith('#') ? hash.slice(1) : hash;
+    let decodedId = rawId;
+    try {
+      decodedId = decodeURIComponent(rawId);
+    } catch (e) {
+      // Ignore URI malformed errors.
+    }
+
+    // 1. Direct ID match (raw and decoded).
+    let target = document.getElementById(rawId) || document.getElementById(decodedId);
+    if (target) {
+      return target;
+    }
+
+    // 2. Name attribute match (<a name="...">).
+    try {
+      if (typeof CSS !== 'undefined' && CSS.escape) {
+        target =
+          document.querySelector('[name="' + CSS.escape(rawId) + '"]') ||
+          document.querySelector('[name="' + CSS.escape(decodedId) + '"]');
+      } else {
+        const namedElements = document.getElementsByName(rawId);
+        if (namedElements && namedElements.length > 0) {
+          return namedElements[0];
+        }
+      }
+    } catch (e) {
+      // Ignore querySelector syntax errors.
+    }
+    if (target) {
+      return target;
+    }
+
+    // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
+    const targetSlug = normalizeSlug(decodedId);
+    if (targetSlug) {
+      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+        if (normalizeSlug(heading.textContent || '') === targetSlug) {
+          return heading;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  document.addEventListener('click', function(event) {
+    const target = event.target;
+    const anchor = target && typeof target.closest === 'function' ? target.closest('a') : null;
+    if (!anchor) {
+      return;
+    }
+
+    const href = anchor.getAttribute('href');
+    if (
+      !href ||
+      href.trim().toLowerCase().startsWith('javascript:') ||
+      anchor.hasAttribute('download')
+    ) {
+      return;
+    }
+
+    // Check if the link is an in-page hash / anchor link.
+    if (href.startsWith('#')) {
+      event.preventDefault();
+      const targetElement = findTargetElement(href);
+      if (targetElement) {
+        targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
+      }
+      return;
+    }
+
+    // Check if the URL has the same origin/pathname but with a hash.
+    try {
+      const url = new URL(anchor.href, window.location.href);
+      if (
+        url.hash &&
+        url.origin === window.location.origin &&
+        url.pathname === window.location.pathname
+      ) {
+        event.preventDefault();
+        const targetElement = findTargetElement(url.hash);
+        if (targetElement) {
+          targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+        return;
+      }
+    } catch (e) {
+      // Fall through if URL parsing fails.
+    }
+
+    // For all external or full navigation links, prevent iframe-level navigation
+    // (which breaks in AGSA WebView or sandboxed iframes) and ensure they open
+    // safely in a new tab/window.
+    if (anchor.target !== '_blank') {
+      event.preventDefault();
+      window.open(anchor.href, '_blank', 'noopener,noreferrer');
+    }
+  }, {capture: true});
+})();</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>基本功 · 日常记录与假设验证</title>
+<style>
+  :root{
+    --bg:#FAF8F3;
+    --bg-warm:#F3EFE6;
+    --card:#FFFFFF;
+    --card-soft:#F7F5EF;
+    --ink:#2B332E;
+    --ink-2:#5E6861;
+    --muted:#8E968F;
+    --line:#EAE5DA;
+    --sage:#3D8B68;
+    --sage-hi:#2F7455;
+    --sage-soft:#E7F4ED;
+    --sage-ring:#52A67E;
+    --amber:#D98A4E;
+    --amber-soft:#FDF2E7;
+    --stone:#7E7972;
+    --stone-soft:#F0EDE7;
+    --shadow:0 10px 32px -12px rgba(43,51,46,.08),0 2px 8px -2px rgba(43,51,46,.04);
+    --shadow-hover:0 14px 36px -12px rgba(43,51,46,.12),0 4px 12px -2px rgba(43,51,46,.05);
+    --radius:22px;
+    --sans:"Inter","PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;min-height:100vh;overflow-x:hidden;
+    background:var(--bg);color:var(--ink);
+    font-family:var(--sans);-webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(900px 520px at 88% -8%, rgba(212,235,220,.55), transparent 62%),
+      radial-gradient(760px 520px at 8% 12%, rgba(252,232,210,.55), transparent 60%),
+      radial-gradient(700px 500px at 50% 100%, rgba(226,238,230,.45), transparent 65%);
+    background-attachment:fixed;
+  }
+
+  .page{
+    max-width:1060px;margin:0 auto;
+    padding:36px 24px 88px;
+    animation:rise .55s cubic-bezier(.2,.7,.3,1) both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes pop{0%{transform:scale(.94)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+  /* ---------- 顶部欢迎区 ---------- */
+  .topbar{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    margin-bottom:28px;
+  }
+  .brand{display:flex;flex-direction:column;gap:6px}
+  .badge{
+    display:inline-flex;align-items:center;gap:7px;width:fit-content;
+    padding:5px 12px;border-radius:999px;
+    background:var(--sage-soft);color:var(--sage-hi);
+    font-size:12px;font-weight:600;letter-spacing:.04em;
+  }
+  .badge::before{
+    content:"";width:7px;height:7px;border-radius:50%;background:var(--sage);
+  }
+  h1{
+    margin:4px 0 0;font-size:clamp(30px,4.5vw,42px);font-weight:750;
+    letter-spacing:-.02em;line-height:1.15;color:var(--ink);
+  }
+  .subtitle{
+    margin:4px 0 0;font-size:14.5px;color:var(--ink-2);line-height:1.6;
+  }
+  .top-pill{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 16px;border-radius:16px;
+    background:rgba(255,255,255,.78);border:1px solid var(--line);
+    box-shadow:var(--shadow);font-size:13px;color:var(--ink-2);
+  }
+  .top-pill strong{color:var(--sage-hi);font-weight:650}
+
+  /* ---------- 卡片通用 ---------- */
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+  }
+
+  /* ---------- 个人假设验证计数器模块 ---------- */
+  .hypo-section{margin-bottom:32px}
+  .sec-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .sec-title-wrap{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .sec-title{margin:0;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .sec-desc{font-size:13px;color:var(--muted)}
+  .sec-actions{display:flex;align-items:center;gap:8px}
+
+  .btn-soft{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 14px;border-radius:12px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-2);
+    font-family:inherit;font-size:13px;font-weight:550;transition:.18s ease;
+  }
+  .btn-soft:hover{background:var(--card-soft);color:var(--ink);border-color:#DCD5C7}
+  .btn-soft[hidden]{display:none}
+  .btn-soft.primary{
+    background:var(--sage);border-color:var(--sage);color:#FFF;
+  }
+  .btn-soft.primary:hover{background:var(--sage-hi);border-color:var(--sage-hi)}
+  .btn-soft.active{background:var(--sage-soft);border-color:#BFE0CE;color:var(--sage-hi)}
+
+  .hypo-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;
+  }
+  .hypo-card{
+    padding:20px 22px 18px;display:flex;flex-direction:column;gap:16px;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .hypo-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+  .hypo-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .hypo-title{
+    margin:0;font-size:15.5px;font-weight:650;line-height:1.5;color:var(--ink);
+    cursor:pointer;border-radius:8px;padding:2px 4px;margin:-2px -4px;transition:background .15s;
+  }
+  .hypo-title:hover{background:var(--card-soft)}
+  .hypo-menu{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+  .icon-btn{
+    width:30px;height:30px;display:grid;place-items:center;padding:0;
+    border:1px solid transparent;border-radius:9px;background:transparent;
+    color:var(--muted);cursor:pointer;transition:.18s;
+  }
+  .icon-btn:hover:not(:disabled){background:var(--card-soft);color:var(--ink);border-color:var(--line)}
+  .icon-btn:disabled{opacity:.3;cursor:default}
+  .icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+  .hypo-mid{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+  }
+  .hypo-stat{display:flex;align-items:baseline;gap:10px}
+  .hypo-frac{
+    font-size:32px;font-weight:750;letter-spacing:-.02em;line-height:1;
+    color:var(--ink);font-variant-numeric:tabular-nums;
+  }
+  .hypo-frac.pop{animation:pop .26s ease}
+  .hypo-rate{
+    padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;
+    background:var(--sage-soft);color:var(--sage-hi);font-variant-numeric:tabular-nums;
+  }
+  .hypo-rate.neutral{background:var(--stone-soft);color:var(--stone)}
+
+  .hypo-btns{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .fb-btn{
+    width:54px;height:46px;display:grid;place-items:center;padding:0;
+    border-radius:14px;cursor:pointer;font-family:inherit;font-size:20px;font-weight:700;
+    transition:transform .12s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+    user-select:none;
+  }
+  .fb-btn:active{transform:scale(.93)}
+  .fb-btn.ok{
+    border:1.5px solid #BEE2CE;background:var(--sage-soft);color:var(--sage-hi);
+  }
+  .fb-btn.ok:hover{
+    background:var(--sage);border-color:var(--sage);color:#FFF;
+    box-shadow:0 6px 16px -4px rgba(61,139,104,.35);
+  }
+  .fb-btn.no{
+    border:1.5px solid #E2DDD3;background:var(--stone-soft);color:var(--stone);
+  }
+  .fb-btn.no:hover{
+    background:#DED8CD;border-color:#CFC8BB;color:var(--ink);
+  }
+
+  .hypo-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding-top:12px;border-top:1px solid var(--line);
+  }
+  .undo-btn{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:5px 10px;border-radius:9px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card-soft);color:var(--ink-2);
+    font-family:inherit;font-size:12px;font-weight:550;transition:.18s;
+  }
+  .undo-btn:hover:not(:disabled){background:#ECE8DE;color:var(--ink)}
+  .undo-btn:disabled{opacity:.38;cursor:default}
+  .hypo-acts{display:flex;align-items:center;gap:6px}
+  .text-btn{
+    padding:4px 8px;border:0;border-radius:8px;background:transparent;
+    color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:.16s;
+  }
+  .text-btn:hover{background:var(--card-soft);color:var(--ink)}
+  .text-btn.archive:hover{background:var(--sage-soft);color:var(--sage-hi)}
+
+  .hypo-empty{
+    padding:28px 20px;text-align:center;color:var(--muted);font-size:14px;
+    border:1.5px dashed #DCD5C7;border-radius:var(--radius);background:rgba(255,255,255,.55);
+  }
+
+  /* 归档抽屉 */
+  .archive-drawer{
+    margin-top:14px;padding:16px 20px;background:rgba(255,255,255,.72);
+    border:1px solid var(--line);border-radius:18px;
+  }
+  .archive-drawer[hidden]{display:none}
+  .archive-head{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
+    font-size:13px;font-weight:600;color:var(--ink-2);
+  }
+  .archive-list{display:flex;flex-direction:column;gap:8px}
+  .archive-item{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    padding:10px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);
+  }
+  .archive-item-title{font-size:14px;font-weight:550;color:var(--ink)}
+  .archive-item-stat{font-size:13px;color:var(--sage-hi);font-weight:600;margin-left:8px}
+
+  /* ---------- 日期导航 ---------- */
+  .datenav{
+    display:flex;align-items:center;gap:14px;
+    padding:12px 18px;margin-bottom:22px;
+    border-radius:18px;background:var(--card);border:1px solid var(--line);
+    box-shadow:var(--shadow);
+  }
+  .datenav button.nav-arrow{
+    width:36px;height:36px;flex:0 0 auto;display:grid;place-items:center;padding:0;
+    border:1px solid var(--line);background:var(--card-soft);color:var(--ink-2);
+    font-size:17px;line-height:1;cursor:pointer;transition:.18s;border-radius:11px;
+  }
+  .datenav button.nav-arrow:hover:not(:disabled){
+    background:var(--sage-soft);border-color:#BFE0CE;color:var(--sage-hi);
+  }
+  .datenav button.nav-arrow:disabled{opacity:.32;cursor:default}
+  #dateText{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:.01em}
+  #wdText{
+    margin-left:8px;padding:3px 9px;border-radius:999px;
+    background:var(--card-soft);font-size:12px;font-weight:600;color:var(--ink-2);
+  }
+  .jump{
+    margin-left:auto;padding:7px 14px;border-radius:11px;
+    border:1px solid #C6E3D3;background:var(--sage-soft);color:var(--sage-hi);
+    font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:.18s;
+  }
+  .jump:hover{background:var(--sage);color:#FFF;border-color:var(--sage)}
+  .jump[hidden]{display:none}
+
+  /* ---------- 主体布局 ---------- */
+  .grid{display:grid;grid-template-columns:296px 1fr;gap:24px;align-items:start}
+  .side{display:flex;flex-direction:column;gap:18px}
+
+  .seal{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    padding:26px 20px 22px;
+  }
+  .ringwrap{position:relative;width:210px;height:210px;flex:0 0 auto}
+  .ringwrap svg{display:block;width:100%;height:100%;overflow:visible}
+  #ringProg{transition:stroke-dashoffset .55s cubic-bezier(.3,.8,.3,1)}
+  #ticks circle{transition:fill .25s}
+  .score{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:2px;
+  }
+  #scoreNum{
+    font-size:54px;font-weight:800;line-height:1;letter-spacing:-.03em;
+    color:var(--ink);font-variant-numeric:tabular-nums;
+  }
+  .of{font-size:13px;font-weight:600;color:var(--muted)}
+  .streak{
+    min-height:18px;font-size:12.5px;font-weight:600;color:var(--amber);
+    text-align:center;
+  }
+  .verdict{
+    width:100%;padding:12px 14px;border-radius:14px;
+    background:var(--card-soft);font-size:13.5px;font-weight:600;
+    color:var(--ink-2);text-align:center;transition:.2s;
+  }
+  .verdict.full{background:var(--sage-soft);color:var(--sage-hi)}
+
+  /* ---------- 最近七日 ---------- */
+  .hist{padding:18px 18px 14px}
+  .hhead{
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;
+  }
+  .hhead span:last-child{font-size:11.5px;font-weight:500;color:var(--muted)}
+  .chips{display:flex;flex-direction:column;gap:4px}
+  .chip{
+    width:100%;display:grid;grid-template-columns:22px 28px 1fr;align-items:center;gap:8px;
+    padding:8px 10px;cursor:pointer;transition:.18s;text-align:left;
+    border:1px solid transparent;background:transparent;color:var(--ink-2);
+    font-family:inherit;border-radius:12px;
+  }
+  .chip:hover{background:var(--card-soft)}
+  .chip.cur{background:var(--sage-soft);border-color:#C6E3D3;color:var(--sage-hi)}
+  .cwd{font-size:12px;font-weight:600;color:var(--muted)}
+  .chip.cur .cwd{color:var(--sage-hi)}
+  .cday{font-size:14.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .dots{display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap}
+  .dots i{width:6px;height:6px;border-radius:50%;display:block;background:#E5E0D5;transition:.2s}
+  .dots i.off{background:#C5BEB2}
+  .dots i.on{background:var(--sage)}
+
+  /* ---------- 今日条目清单 ---------- */
+  .plaque{padding:8px 24px 16px}
+  .plaque-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 0 14px;border-bottom:1px solid var(--line);
+  }
+  .plaque-head-left{display:flex;align-items:baseline;gap:10px}
+  #headLabel{font-size:16px;font-weight:700;color:var(--ink)}
+  #headHint{font-size:12.5px;color:var(--muted);font-weight:500}
+  .mini{
+    padding:7px 14px;cursor:pointer;border:1px solid var(--line);
+    background:var(--card-soft);color:var(--ink-2);border-radius:11px;
+    font-family:inherit;font-size:12.5px;font-weight:600;transition:.18s;
+  }
+  .mini:hover{background:#ECE7DC;color:var(--ink)}
+  .mini.on{background:var(--sage);border-color:var(--sage);color:#FFF}
+
+  .row{
+    position:relative;display:grid;grid-template-columns:42px 1fr auto;gap:14px;align-items:center;
+    padding:15px 10px;margin:0 -10px;border-radius:14px;transition:background .18s;
+  }
+  .row:hover{background:var(--card-soft)}
+  .row + .row{border-top:1px solid var(--line)}
+  .row.is-yes{background:rgba(231,244,237,.45)}
+  .row.is-yes:hover{background:rgba(231,244,237,.7)}
+  .ord{
+    width:32px;height:30px;display:grid;place-items:center;border-radius:9px;
+    background:var(--card-soft);font-size:12.5px;font-weight:700;color:var(--muted);
+    font-variant-numeric:tabular-nums;transition:.2s;
+  }
+  .row.is-yes .ord{background:var(--sage);color:#FFF}
+  .ord-select{
+    width:42px;height:32px;border-radius:9px;border:1px solid #C6E3D3;
+    background:var(--sage-soft);color:var(--sage-hi);font-family:inherit;
+    font-size:12.5px;font-weight:700;text-align:center;cursor:pointer;outline:none;
+  }
+  .ord-select:focus{border-color:var(--sage)}
+
+  .row h3{
+    margin:0;font-weight:650;font-size:15.5px;color:var(--ink);transition:.2s;
+  }
+  .row p{margin:3px 0 0;font-size:12.5px;line-height:1.55;color:var(--muted)}
+  .row.is-no h3{color:var(--ink-2)}
+  .tag{
+    display:inline-block;margin-left:7px;padding:1px 7px;vertical-align:1px;
+    background:var(--amber-soft);border-radius:999px;
+    font-size:11px;font-weight:600;color:var(--amber);
+  }
+
+  /* 勾与叉二元按钮 */
+  .seg{display:flex;gap:8px;align-items:center}
+  .seg button{
+    width:46px;height:40px;display:grid;place-items:center;padding:0;cursor:pointer;
+    border:1.5px solid var(--line);border-radius:12px;
+    background:var(--card);color:var(--muted);
+    font-family:inherit;font-size:16px;font-weight:700;
+    transition:transform .12s ease, background .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .seg button:active{transform:scale(.92)}
+  .seg .y:hover{border-color:#A8D7BE;background:var(--sage-soft);color:var(--sage-hi)}
+  .seg .n:hover{border-color:#D8D0C3;background:var(--stone-soft);color:var(--ink-2)}
+  .seg .y[aria-pressed="true"]{
+    background:var(--sage);border-color:var(--sage);color:#FFF;
+    box-shadow:0 4px 12px -3px rgba(61,139,104,.38);
+  }
+  .seg .n[aria-pressed="true"]{
+    background:var(--stone);border-color:var(--stone);color:#FFF;
+  }
+  .row.is-inv .seg .n:hover{border-color:#A8D7BE;background:var(--sage-soft);color:var(--sage-hi)}
+  .row.is-inv .seg .n[aria-pressed="true"]{
+    background:var(--sage);border-color:var(--sage);color:#FFF;
+    box-shadow:0 4px 12px -3px rgba(61,139,104,.38);
+  }
+  .row.is-inv .seg .y[aria-pressed="true"]{
+    background:var(--stone);border-color:var(--stone);color:#FFF;box-shadow:none;
+  }
+
+  /* ---------- 编辑工具 ---------- */
+  .tools{display:flex;gap:6px}
+  .tools button{
+    width:32px;height:32px;display:grid;place-items:center;padding:0;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);
+    color:var(--ink-2);border-radius:10px;transition:.18s;
+  }
+  .tools svg{width:14px;height:14px;display:block;stroke:currentColor;fill:none;
+    stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+  .tools button:hover:not(:disabled){border-color:#BFE0CE;color:var(--sage-hi);background:var(--sage-soft)}
+  .tools button:disabled{opacity:.25;cursor:default}
+  .tools .del:hover{border-color:#F0B9A8;background:#FDECE6;color:#C2593F}
+  .addRow{
+    width:100%;margin:10px 0 4px;padding:12px 0;cursor:pointer;
+    border:1.5px dashed #C3DEC9;background:rgba(231,244,237,.4);border-radius:14px;
+    color:var(--sage-hi);font-family:inherit;font-size:13.5px;font-weight:600;transition:.18s;
+  }
+  .addRow:hover{background:var(--sage-soft);border-color:var(--sage)}
+  .empty-note{padding:24px 0 8px;font-size:13.5px;color:var(--muted);text-align:center}
+
+  /* ---------- 数据保存与 AI 读取区 ---------- */
+  .vault{
+    margin-top:24px;padding:20px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    background:linear-gradient(135deg, #FFFFFF 0%, #F4F9F5 100%);
+  }
+  .vault-info{display:flex;flex-direction:column;gap:4px;max-width:540px}
+  .vault-title{font-size:15.5px;font-weight:700;color:var(--ink);margin:0}
+  .vault-desc{font-size:13px;line-height:1.6;color:var(--ink-2);margin:0}
+  .vault-stat{font-size:12px;font-weight:600;color:var(--sage-hi);margin-top:2px}
+  .vault-btns{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+  /* ---------- 日记用文本 ---------- */
+  .ledger{margin-top:20px;padding:20px 24px 22px}
+  .lhead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .lhead span{font-size:15px;font-weight:700;color:var(--ink)}
+  .copy{
+    padding:8px 18px;cursor:pointer;transition:.18s;border-radius:11px;
+    border:1px solid #BFE0CE;background:var(--sage-soft);
+    color:var(--sage-hi);font-family:inherit;font-size:13px;font-weight:600;
+  }
+  .copy:hover{background:var(--sage);color:#FFF;border-color:var(--sage)}
+  .copy.done{background:var(--sage);border-color:var(--sage);color:#FFF}
+  #preview{
+    margin:14px 0 0;padding:16px 18px;min-height:110px;border-radius:14px;
+    background:var(--card-soft);border:1px solid var(--line);
+    font-family:var(--sans);font-size:13.5px;line-height:1.9;
+    color:var(--ink);white-space:pre-wrap;word-break:break-word;
+  }
+  #preview.empty{font-size:13px;color:var(--muted)}
+
+  .foot{
+    margin-top:32px;padding-top:16px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-size:12px;line-height:1.8;color:var(--muted);
+  }
+
+  /* ---------- 弹层 ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+    padding:20px;background:rgba(43,51,46,.32);backdrop-filter:blur(4px);
+    animation:fade .16s ease both;
+  }
+  .modal[hidden]{display:none}
+  .sheet{
+    width:min(440px,100%);padding:22px 24px 20px;
+    background:var(--card);border:1px solid var(--line);border-radius:22px;
+    box-shadow:0 24px 60px -16px rgba(43,51,46,.22);
+    animation:rise .24s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .mhead{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-bottom:14px;border-bottom:1px solid var(--line);
+    font-size:16px;font-weight:700;color:var(--ink);
+  }
+  .mhead button{
+    width:28px;height:28px;display:grid;place-items:center;border-radius:8px;
+    background:transparent;border:0;color:var(--muted);font-size:15px;cursor:pointer;
+  }
+  .mhead button:hover{background:var(--card-soft);color:var(--ink)}
+  .sheet label.fl{
+    display:block;margin-top:16px;font-size:12.5px;font-weight:600;color:var(--ink-2);
+  }
+  .sheet input[type=text], .sheet select{
+    display:block;width:100%;margin-top:7px;padding:11px 13px;
+    background:var(--card-soft);border:1.5px solid var(--line);border-radius:12px;
+    color:var(--ink);font-family:inherit;font-size:14.5px;outline:none;transition:.18s;
+  }
+  .sheet input[type=text]:focus, .sheet select:focus{border-color:var(--sage);background:#FFF}
+  .sheet input.bad{border-color:#D97757;background:#FFF7F4}
+  .mcheck{
+    display:flex;align-items:flex-start;gap:9px;margin-top:16px;
+    font-size:13px;line-height:1.6;color:var(--ink-2);cursor:pointer;
+  }
+  .mcheck input{accent-color:var(--sage);width:16px;height:16px;margin:2px 0 0}
+  .mfoot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+  .mfoot button{
+    padding:9px 18px;cursor:pointer;border:1px solid var(--line);
+    background:var(--card-soft);color:var(--ink-2);border-radius:11px;
+    font-family:inherit;font-size:13.5px;font-weight:600;transition:.18s;
+  }
+  .mfoot button:hover{background:#ECE7DC;color:var(--ink)}
+  .mfoot .primary{background:var(--sage);border-color:var(--sage);color:#FFF}
+  .mfoot .primary:hover{background:var(--sage-hi)}
+  .mtext{padding:16px 0 2px;font-size:14.5px;line-height:1.75;color:var(--ink)}
+  .mtext b{color:var(--sage-hi);font-weight:650}
+  .mtext span{display:block;margin-top:6px;font-size:12.5px;color:var(--muted)}
+
+  /* ---------- 自适应 ---------- */
+  @media (max-width:860px){
+    .grid{grid-template-columns:1fr;gap:18px}
+    .side{display:contents}
+    .seal{order:1}.plaque{order:2}.hist{order:3}
+    .seal{flex-direction:row;justify-content:center;align-items:center;gap:24px;padding:20px}
+    .verdict{margin-top:0;width:auto}
+    .ringwrap{width:136px;height:136px}
+    #scoreNum{font-size:40px}
+    .streak{text-align:left}
+    .chips{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .chip{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px}
+    .dots{justify-content:center;gap:3px}
+    .dots i{width:5px;height:5px}
+  }
+  @media (max-width:640px){
+    .page{padding:24px 14px 68px}
+    .hypo-grid{grid-template-columns:1fr}
+    .plaque{padding:6px 16px 14px}
+    #headHint{display:none}
+    .row{grid-template-columns:42px 1fr;grid-template-areas:"ord txt" ". seg";row-gap:12px;padding:14px 8px;margin:0 -8px}
+    .ord,.ord-select{grid-area:ord;align-self:start;margin-top:2px}
+    .txt{grid-area:txt}
+    .seg,.tools{grid-area:seg;justify-self:end}
+    .ledger,.vault{padding:18px 16px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="badge">轻松记录 · 慢慢来</span>
+      <h1>基本功</h1>
+      <p class="subtitle">不带评判地观察自己——点一下 ✓ 或 ✕，把真实的反馈留下来。</p>
+    </div>
+    <div class="top-pill">
+      <span>今日共有 <strong id="cntTop">10</strong> 件小事，做一件事就算一件事</span>
+    </div>
+  </header>
+
+  <!-- 极简“个人假设验证”计数器（严格无日期/时间/倒计时展示） -->
+  <section class="hypo-section" aria-label="个人假设验证">
+    <div class="sec-head">
+      <div class="sec-title-wrap">
+        <h2 class="sec-title">个人假设验证</h2>
+        <span class="sec-desc">状态不适或想试试新策略时，随手点一下 ✓ 或 ✕</span>
+      </div>
+      <div class="sec-actions">
+        <button class="btn-soft" id="toggleArchiveBtn" hidden="">已归档 (<span id="archiveCount">0</span>)</button>
+        <button class="btn-soft primary" id="addHypoBtn">＋ 新增假设</button>
+      </div>
+    </div>
+
+    <div class="hypo-grid" id="hypoGrid"><article class="card hypo-card" data-hid="h_rest_default"><div class="hypo-top"><h3 class="hypo-title" data-hact="edit" title="点击修改假设描述">状态失控/不适时，停下来静休 5–15 分钟有效</h3><div class="hypo-menu"><button class="icon-btn" data-hact="edit" title="编辑描述" aria-label="编辑描述"><svg viewBox="0 0 16 16"><path d="M11.3 2.5a1.5 1.5 0 0 1 2.2 2.2L5.3 12.9l-3 .8.8-3z"></path></svg></button><button class="icon-btn" data-hact="del" title="删除" aria-label="删除"><svg viewBox="0 0 16 16"><path d="M3.5 4.5h9M6 4.5V3h4v1.5M4.5 4.5l.7 8.5h5.6l.7-8.5"></path></svg></button></div></div><div class="hypo-mid"><div class="hypo-stat"><span class="hypo-frac">0 / 0</span><span class="hypo-rate neutral">待验证</span></div><div class="hypo-btns"><button class="fb-btn ok" data-hact="ok" title="有效 / 成功" aria-label="有效">✓</button><button class="fb-btn no" data-hact="no" title="无效 / 失败" aria-label="无效">✕</button></div></div><div class="hypo-foot"><button class="undo-btn" data-hact="undo" disabled="">↩ 撤销上一步</button><div class="hypo-acts"><button class="text-btn" data-hact="reset" disabled="">清零</button><button class="text-btn archive" data-hact="archive">已验证归档</button></div></div></article></div>
+
+    <div class="archive-drawer" id="archiveDrawer" hidden="">
+      <div class="archive-head">
+        <span>已验证并归档的假设</span>
+        <button class="text-btn" id="closeArchiveBtn">收起</button>
+      </div>
+      <div class="archive-list" id="archiveList"></div>
+    </div>
+  </section>
+
+  <!-- 日期条（仅用于基本功每日记录） -->
+  <div class="datenav">
+    <button class="nav-arrow" id="prev" title="前一天" aria-label="前一天">‹</button>
+    <div><span id="dateText">11 月 27 日</span><span id="wdText">周五</span></div>
+    <button class="nav-arrow" id="next" title="后一天" aria-label="后一天" disabled="">›</button>
+    <button class="jump" id="todayJump" hidden="">回到今天</button>
+  </div>
+
+  <!-- 主体：基本功 -->
+  <div class="grid">
+    <div class="side">
+      <aside class="card seal">
+        <div class="ringwrap">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <linearGradient id="sageGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#68C194"></stop>
+                <stop offset="100%" stop-color="#2F7455"></stop>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r="80" fill="none" stroke="#EAE5DA" stroke-width="10"></circle>
+            <circle id="ringProg" cx="100" cy="100" r="80" fill="none" stroke="url(#sageGrad)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 100 100)" stroke-dasharray="502.65" stroke-dashoffset="502.65" style="stroke-dashoffset: 502.65;"></circle>
+            <g id="ticks"><circle cx="100.00" cy="37.00" r="3" fill="#E0DAD0"></circle><circle cx="137.03" cy="49.03" r="3" fill="#E0DAD0"></circle><circle cx="159.92" cy="80.53" r="3" fill="#E0DAD0"></circle><circle cx="159.92" cy="119.47" r="3" fill="#E0DAD0"></circle><circle cx="137.03" cy="150.97" r="3" fill="#E0DAD0"></circle><circle cx="100.00" cy="163.00" r="3" fill="#E0DAD0"></circle><circle cx="62.97" cy="150.97" r="3" fill="#E0DAD0"></circle><circle cx="40.08" cy="119.47" r="3" fill="#E0DAD0"></circle><circle cx="40.08" cy="80.53" r="3" fill="#E0DAD0"></circle><circle cx="62.97" cy="49.03" r="3" fill="#E0DAD0"></circle></g>
+          </svg>
+          <div class="score">
+            <span id="scoreNum">0</span>
+            <span class="of">/ <span id="scoreAll">10</span></span>
+          </div>
+        </div>
+        <div class="streak" id="streak"></div>
+        <div class="verdict" id="verdict">今天还没开始勾选</div>
+      </aside>
+
+      <section class="card hist">
+        <div class="hhead"><span>最近七日</span><span>点日期可回看</span></div>
+        <div class="chips" id="chips"><button class="chip cur" data-k="2026-11-27"><span class="cwd">五</span><span class="cday">27</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-26"><span class="cwd">四</span><span class="cday">26</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-25"><span class="cwd">三</span><span class="cday">25</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-24"><span class="cwd">二</span><span class="cday">24</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-23"><span class="cwd">一</span><span class="cday">23</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-22"><span class="cwd">日</span><span class="cday">22</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button><button class="chip" data-k="2026-11-21"><span class="cwd">六</span><span class="cday">21</span><span class="dots"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span></button></div>
+      </section>
+    </div>
+
+    <main class="card plaque editing" id="plaque">
+      <div class="plaque-head">
+        <div class="plaque-head-left">
+          <span id="headLabel">编辑条目</span>
+          <span id="headHint">点左侧数字直接改排名</span>
+        </div>
+        <button class="mini on" id="editBtn">完成</button>
+      </div>
+      <div id="list"><div class="row" data-id="wake"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0" selected="">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>七点起床</h3><p>7:00 起床</p></div><div class="tools"><button data-act="up" title="上移" disabled=""><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="sleep"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1" selected="">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>十点后洗澡、入睡</h3><p>22:00 后洗澡，然后睡觉</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="med"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2" selected="">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>早晚按时吃药</h3><p>早上一次、晚上一次</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="warm"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3" selected="">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>注意保暖</h3><p>吹风机吹干头发、开浴霸、开大灯、出门穿厚一些</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="nap"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4" selected="">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>午后小睡</h3><p>13:00 之后睡午觉</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="rest"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5" selected="">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>注意休息，保养好</h3><p>累了就停，不硬撑</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="slow"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6" selected="">7</option><option value="7">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>慢慢来，不急</h3><p>赶的时候提醒自己慢半拍</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="walk"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7" selected="">8</option><option value="8">9</option><option value="9">10</option></select><div class="txt"><h3>走路不看屏幕</h3><p>走路时手机收起来</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row is-inv" data-id="douyin"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8" selected="">9</option><option value="9">10</option></select><div class="txt"><h3>刷抖音B站<span class="tag">反向</span></h3><p>当天刷过短视频/直播（点 ✕ 表示没刷）</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><div class="row" data-id="noai"><select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9" selected="">10</option></select><div class="txt"><h3>不问手机AI问题</h3><p>先自己想，不顺手问 AI</p></div><div class="tools"><button data-act="up" title="上移"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"></path></svg></button><button data-act="down" title="下移" disabled=""><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"></path></svg></button><button data-act="edit" title="修改"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"></path><path d="M7.6 2.4l2 2"></path></svg></button><button data-act="del" class="del" title="删除"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"></path></svg></button></div></div><button class="addRow" id="addRow">＋ 新增一项</button></div>
+    </main>
+  </div>
+
+  <!-- 数据保存与 AI 读取中心 -->
+  <section class="card vault" aria-label="数据保存与AI读取">
+    <div class="vault-info">
+      <h3 class="vault-title">把全部数据直接存进网页文件（方便随时丢给 AI 分析）</h3>
+      <p class="vault-desc">平时点选会实时存在浏览器里；点右侧「保存含数据的 HTML」，会把你的所有历史天数和假设验证直接写进文件本身。之后把这一个 HTML 发给 AI，它就能一次读完你几个月甚至一年的全部记录。</p>
+      <span class="vault-stat" id="vaultStat">当前已累计：0 天记录 · 0 次假设反馈</span>
+    </div>
+    <div class="vault-btns">
+      <button class="btn-soft" id="copyAiBtn">复制全量数据给 AI</button>
+      <button class="btn-soft primary" id="exportHtmlBtn">保存含数据的 HTML</button>
+    </div>
+  </section>
+
+  <section class="card ledger">
+    <div class="lhead"><span>今日日记用文本</span><button class="copy" id="copyBtn">复制文本</button></div>
+    <pre id="preview" class="empty">勾选后自动生成，点「复制文本」粘进日记即可。</pre>
+  </section>
+
+  <div class="foot">
+    <span>日常点击实时存在当前浏览器中；定期点「保存含数据的 HTML」即可把数据永久固化进文件。</span>
+    <span>点「调整条目」可直接选择排名序号，一键排到第 1 位或任意位置。</span>
+  </div>
+
+</div>
+
+<!-- 编辑基本功条目 -->
+<div class="modal" id="modal" hidden="">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="mhead"><span id="mTitle">修改条目</span><button id="mClose" aria-label="关闭">✕</button></div>
+    <label class="fl">名称<input type="text" id="mName" maxlength="28" placeholder="例：走路不看屏幕" autocomplete="off"></label>
+    <label class="fl">说明（可选）<input type="text" id="mNote" maxlength="60" placeholder="一句温和的提示就好" autocomplete="off"></label>
+    <label class="fl">排在第几位（按重要性）<select id="mPos"><option value="0">第 1 位（最重要）</option><option value="1">第 2 位</option><option value="2">第 3 位</option><option value="3">第 4 位</option><option value="4">第 5 位</option><option value="5">第 6 位</option><option value="6">第 7 位</option><option value="7">第 8 位</option><option value="8">第 9 位</option><option value="9" selected="">第 10 位（末尾）</option></select></label>
+    <label class="mcheck"><input type="checkbox" id="mInv"><span>反向项：选「✕」才算做到（如「刷抖音B站」这类）</span></label>
+    <div class="mfoot">
+      <button id="mCancel">取消</button>
+      <button id="mOk" class="primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增 / 编辑假设卡片 -->
+<div class="modal" id="hypoModal" hidden="">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="mhead"><span id="hmTitle">新增假设</span><button id="hmClose" aria-label="关闭">✕</button></div>
+    <label class="fl">想验证的假设<input type="text" id="hmInput" maxlength="60" placeholder="例：状态失控/不适时，停下来静休 5–15 分钟有效" autocomplete="off"></label>
+    <div class="mfoot">
+      <button id="hmCancel">取消</button>
+      <button id="hmOk" class="primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通用确认弹层 -->
+<div class="modal" id="confirm" hidden="">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="mhead"><span id="cTitle">确认操作</span><button id="cClose" aria-label="关闭">✕</button></div>
+    <div class="mtext" id="cText"></div>
+    <div class="mfoot">
+      <button id="cCancel">取消</button>
+      <button id="cOk" class="primary">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 内嵌全量历史数据（保存含数据的 HTML 时自动写入这里，供本页面恢复与 AI 直接读取） -->
+<script id="embedded-data" type="application/json">{
+  "version": 1,
+  "exportedAt": "2026-11-27T00:09:47.904Z",
+  "items": [
+    {
+      "id": "wake",
+      "t": "七点起床",
+      "note": "7:00 起床"
+    },
+    {
+      "id": "sleep",
+      "t": "十点后洗澡、入睡",
+      "note": "22:00 后洗澡，然后睡觉"
+    },
+    {
+      "id": "med",
+      "t": "早晚按时吃药",
+      "note": "早上一次、晚上一次"
+    },
+    {
+      "id": "warm",
+      "t": "注意保暖",
+      "note": "吹风机吹干头发、开浴霸、开大灯、出门穿厚一些"
+    },
+    {
+      "id": "nap",
+      "t": "午后小睡",
+      "note": "13:00 之后睡午觉"
+    },
+    {
+      "id": "rest",
+      "t": "注意休息，保养好",
+      "note": "累了就停，不硬撑"
+    },
+    {
+      "id": "slow",
+      "t": "慢慢来，不急",
+      "note": "赶的时候提醒自己慢半拍"
+    },
+    {
+      "id": "walk",
+      "t": "走路不看屏幕",
+      "note": "走路时手机收起来"
+    },
+    {
+      "id": "douyin",
+      "t": "刷抖音B站",
+      "note": "当天刷过短视频/直播（点 ✕ 表示没刷）",
+      "inv": true,
+      "pos": "没刷抖音B站",
+      "neg": "刷了抖音B站"
+    },
+    {
+      "id": "noai",
+      "t": "不问手机AI问题",
+      "note": "先自己想，不顺手问 AI"
+    }
+  ],
+  "dailyRecords": {},
+  "hypotheses": [
+    {
+      "id": "h_rest_default",
+      "title": "状态失控/不适时，停下来静休 5–15 分钟有效",
+      "archived": false,
+      "history": []
+    }
+  ]
+}</script>
+
+<script>
+(function(){
+  "use strict";
+
+  // =========================================================
+  // 1. 通用工具与内嵌数据读取
+  // =========================================================
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function cnNum(n){
+    var d = ["零","一","二","三","四","五","六","七","八","九"];
+    if (n < 10) return d[n];
+    if (n === 10) return "十";
+    if (n < 20) return "十" + d[n-10];
+    return d[Math.floor(n/10)] + "十" + (n%10 ? d[n%10] : "");
+  }
+
+  function readEmbedded(){
+    try {
+      var el = document.getElementById("embedded-data");
+      if (!el) return null;
+      var txt = (el.textContent || "").trim();
+      if (!txt || txt === "{}") return null;
+      var obj = JSON.parse(txt);
+      return (obj && typeof obj === "object") ? obj : null;
+    } catch(e){ return null; }
+  }
+  var EMBEDDED = readEmbedded();
+
+  // =========================================================
+  // 2. 极简“个人假设验证”计数器（无UI时间，底层隐形时间戳 + Undo栈）
+  // =========================================================
+  var HYPO_KEY = "jibengong.hypotheses.v1";
+  var DEFAULT_HYPOS = [
+    {
+      id: "h_rest_default",
+      title: "状态失控/不适时，停下来静休 5–15 分钟有效",
+      archived: false,
+      history: []
+    }
+  ];
+
+  function normalizeHypos(arr){
+    return arr.filter(function(h){ return h && h.id && h.title; }).map(function(h){
+      return {
+        id: h.id,
+        title: String(h.title),
+        archived: !!h.archived,
+        history: Array.isArray(h.history) ? h.history : []
+      };
+    });
+  }
+
+  function loadHypos(){
+    var local = null;
+    try {
+      var raw = localStorage.getItem(HYPO_KEY);
+      if (raw){
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) local = normalizeHypos(parsed);
+      }
+    } catch(e){}
+    if (local && local.length) return local;
+    if (EMBEDDED && Array.isArray(EMBEDDED.hypotheses) && EMBEDDED.hypotheses.length){
+      var emb = normalizeHypos(EMBEDDED.hypotheses);
+      try { localStorage.setItem(HYPO_KEY, JSON.stringify(emb)); } catch(e){}
+      return emb;
+    }
+    return JSON.parse(JSON.stringify(DEFAULT_HYPOS));
+  }
+  function saveHypos(){
+    try { localStorage.setItem(HYPO_KEY, JSON.stringify(hypos)); } catch(e){}
+    updateVaultStat();
+  }
+
+  var hypos = loadHypos();
+  var hypoGrid = document.getElementById("hypoGrid");
+  var addHypoBtn = document.getElementById("addHypoBtn");
+  var toggleArchiveBtn = document.getElementById("toggleArchiveBtn");
+  var archiveCountEl = document.getElementById("archiveCount");
+  var archiveDrawer = document.getElementById("archiveDrawer");
+  var archiveList = document.getElementById("archiveList");
+  var closeArchiveBtn = document.getElementById("closeArchiveBtn");
+
+  var hypoModal = document.getElementById("hypoModal");
+  var hmTitle = document.getElementById("hmTitle");
+  var hmInput = document.getElementById("hmInput");
+  var hmOk = document.getElementById("hmOk");
+  var hmCancel = document.getElementById("hmCancel");
+  var hmClose = document.getElementById("hmClose");
+  var editingHypoId = null;
+  var lastPopId = null;
+
+  function hypoStats(h){
+    var ok = 0, total = h.history.length;
+    for (var i = 0; i < total; i++){
+      if (h.history[i].type === "ok") ok++;
+    }
+    var pct = total > 0 ? Math.round((ok / total) * 100) : null;
+    return { ok: ok, total: total, pct: pct };
+  }
+
+  function findHypo(id){
+    for (var i = 0; i < hypos.length; i++){
+      if (hypos[i].id === id) return hypos[i];
+    }
+    return null;
+  }
+
+  function renderHypos(){
+    var active = hypos.filter(function(h){ return !h.archived; });
+    var archived = hypos.filter(function(h){ return h.archived; });
+
+    if (!active.length){
+      hypoGrid.innerHTML = '<div class="hypo-empty">当前没有进行中的假设，点右上角「＋ 新增假设」即可开始。</div>';
+    } else {
+      var html = "";
+      active.forEach(function(h){
+        var st = hypoStats(h);
+        var popCls = (lastPopId === h.id) ? " pop" : "";
+        html += '<article class="card hypo-card" data-hid="' + esc(h.id) + '">'
+              +   '<div class="hypo-top">'
+              +     '<h3 class="hypo-title" data-hact="edit" title="点击修改假设描述">' + esc(h.title) + '</h3>'
+              +     '<div class="hypo-menu">'
+              +       '<button class="icon-btn" data-hact="edit" title="编辑描述" aria-label="编辑描述">'
+              +         '<svg viewBox="0 0 16 16"><path d="M11.3 2.5a1.5 1.5 0 0 1 2.2 2.2L5.3 12.9l-3 .8.8-3z"/></svg>'
+              +       '</button>'
+              +       '<button class="icon-btn" data-hact="del" title="删除" aria-label="删除">'
+              +         '<svg viewBox="0 0 16 16"><path d="M3.5 4.5h9M6 4.5V3h4v1.5M4.5 4.5l.7 8.5h5.6l.7-8.5"/></svg>'
+              +       '</button>'
+              +     '</div>'
+              +   '</div>'
+              +   '<div class="hypo-mid">'
+              +     '<div class="hypo-stat">'
+              +       '<span class="hypo-frac' + popCls + '">' + st.ok + ' / ' + st.total + '</span>'
+              +       '<span class="hypo-rate' + (st.pct === null ? ' neutral' : '') + '">'
+              +         (st.pct === null ? '待验证' : st.pct + '%')
+              +       '</span>'
+              +     '</div>'
+              +     '<div class="hypo-btns">'
+              +       '<button class="fb-btn ok" data-hact="ok" title="有效 / 成功" aria-label="有效">✓</button>'
+              +       '<button class="fb-btn no" data-hact="no" title="无效 / 失败" aria-label="无效">✕</button>'
+              +     '</div>'
+              +   '</div>'
+              +   '<div class="hypo-foot">'
+              +     '<button class="undo-btn" data-hact="undo"' + (st.total === 0 ? ' disabled' : '') + '>↩ 撤销上一步</button>'
+              +     '<div class="hypo-acts">'
+              +       '<button class="text-btn" data-hact="reset"' + (st.total === 0 ? ' disabled' : '') + '>清零</button>'
+              +       '<button class="text-btn archive" data-hact="archive">已验证归档</button>'
+              +     '</div>'
+              +   '</div>'
+              + '</article>';
+      });
+      hypoGrid.innerHTML = html;
+      lastPopId = null;
+    }
+
+    archiveCountEl.textContent = archived.length;
+    toggleArchiveBtn.hidden = archived.length === 0;
+    if (archived.length === 0) archiveDrawer.hidden = true;
+
+    var ahtml = "";
+    archived.forEach(function(h){
+      var st = hypoStats(h);
+      ahtml += '<div class="archive-item" data-hid="' + esc(h.id) + '">'
+             +   '<div><span class="archive-item-title">' + esc(h.title) + '</span>'
+             +   '<span class="archive-item-stat">' + st.ok + ' / ' + st.total + (st.pct !== null ? ' (' + st.pct + '%)' : '') + '</span></div>'
+             +   '<div class="hypo-acts">'
+             +     '<button class="text-btn archive" data-hact="unarchive">恢复到主页</button>'
+             +     '<button class="text-btn" data-hact="del">删除</button>'
+             +   '</div>'
+             + '</div>';
+    });
+    archiveList.innerHTML = ahtml;
+  }
+
+  function openHypoModal(h){
+    editingHypoId = h ? h.id : null;
+    hmTitle.textContent = h ? "修改假设描述" : "新增待验证假设";
+    hmInput.value = h ? h.title : "";
+    hmInput.classList.remove("bad");
+    hypoModal.hidden = false;
+    setTimeout(function(){ try { hmInput.focus(); hmInput.select(); } catch(e){} }, 40);
+  }
+  function closeHypoModal(){ hypoModal.hidden = true; editingHypoId = null; }
+
+  hmOk.addEventListener("click", function(){
+    var txt = hmInput.value.replace(/\s+/g, " ").trim();
+    if (!txt){ hmInput.classList.add("bad"); hmInput.focus(); return; }
+    if (editingHypoId){
+      var h = findHypo(editingHypoId);
+      if (h) h.title = txt;
+    } else {
+      hypos.unshift({
+        id: "h_" + Date.now().toString(36) + Math.floor(Math.random()*900+100),
+        title: txt,
+        archived: false,
+        history: []
+      });
+    }
+    saveHypos();
+    closeHypoModal();
+    renderHypos();
+  });
+  hmCancel.addEventListener("click", closeHypoModal);
+  hmClose.addEventListener("click", closeHypoModal);
+  hmInput.addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); hmOk.click(); } });
+  addHypoBtn.addEventListener("click", function(){ openHypoModal(null); });
+
+  toggleArchiveBtn.addEventListener("click", function(){
+    archiveDrawer.hidden = !archiveDrawer.hidden;
+    toggleArchiveBtn.classList.toggle("active", !archiveDrawer.hidden);
+  });
+  closeArchiveBtn.addEventListener("click", function(){
+    archiveDrawer.hidden = true;
+    toggleArchiveBtn.classList.remove("active");
+  });
+
+  function handleHypoAction(ev){
+    var target = ev.target.closest("[data-hact]");
+    if (!target) return;
+    var card = target.closest("[data-hid]");
+    if (!card) return;
+    var id = card.getAttribute("data-hid");
+    var act = target.getAttribute("data-hact");
+    var h = findHypo(id);
+    if (!h) return;
+
+    if (act === "ok" || act === "no"){
+      h.history.push({ type: act, ts: Date.now() });
+      lastPopId = h.id;
+      saveHypos();
+      renderHypos();
+    } else if (act === "undo"){
+      if (h.history.length > 0){
+        h.history.pop();
+        lastPopId = h.id;
+        saveHypos();
+        renderHypos();
+      }
+    } else if (act === "edit"){
+      openHypoModal(h);
+    } else if (act === "archive"){
+      h.archived = true;
+      saveHypos();
+      renderHypos();
+    } else if (act === "unarchive"){
+      h.archived = false;
+      saveHypos();
+      renderHypos();
+    } else if (act === "reset"){
+      openConfirm("重置计数", "确定把「<b>" + esc(h.title) + "</b>」的计数清零吗？<span>清零后可以重新开始统计。</span>", "清零", function(){
+        h.history = [];
+        saveHypos();
+        renderHypos();
+      });
+    } else if (act === "del"){
+      openConfirm("删除假设", "确定删除「<b>" + esc(h.title) + "</b>」吗？<span>删除后这条假设和它的计数记录都会移除。</span>", "删除", function(){
+        hypos = hypos.filter(function(item){ return item.id !== id; });
+        saveHypos();
+        renderHypos();
+      });
+    }
+  }
+  hypoGrid.addEventListener("click", handleHypoAction);
+  archiveList.addEventListener("click", handleHypoAction);
+
+  // =========================================================
+  // 3. 基本功每日记录模块（支持从内嵌数据合并恢复 + 一键排位）
+  // =========================================================
+  var DEFAULTS = [
+    { id:"wake",  t:"七点起床",            note:"7:00 起床" },
+    { id:"sleep", t:"十点后洗澡、入睡",     note:"22:00 后洗澡，然后睡觉" },
+    { id:"med",   t:"早晚按时吃药",         note:"早上一次、晚上一次" },
+    { id:"warm",  t:"注意保暖",             note:"吹风机吹干头发、开浴霸、开大灯、出门穿厚一些" },
+    { id:"nap",   t:"午后小睡",             note:"13:00 之后睡午觉" },
+    { id:"rest",  t:"注意休息，保养好",     note:"累了就停，不硬撑" },
+    { id:"slow",  t:"慢慢来，不急",         note:"赶的时候提醒自己慢半拍" },
+    { id:"walk",  t:"走路不看屏幕",         note:"走路时手机收起来" },
+    { id:"douyin",t:"刷抖音B站",            note:"当天刷过短视频/直播（点 ✕ 表示没刷）",
+      inv:true, pos:"没刷抖音B站", neg:"刷了抖音B站" },
+    { id:"noai",  t:"不问手机AI问题",       note:"先自己想，不顺手问 AI" }
+  ];
+  var KEY = "jibengong.v1";
+  var IK  = "jibengong.items.v2";
+  var WD  = ["日","一","二","三","四","五","六"];
+
+  function loadItems(){
+    try {
+      var raw = localStorage.getItem(IK);
+      if (raw){
+        var a = JSON.parse(raw);
+        if (Array.isArray(a) && a.length) return a.filter(function(x){ return x && x.id && x.t; });
+      }
+    } catch(e){}
+    if (EMBEDDED && Array.isArray(EMBEDDED.items) && EMBEDDED.items.length){
+      var emb = EMBEDDED.items.filter(function(x){ return x && x.id && x.t; });
+      try { localStorage.setItem(IK, JSON.stringify(emb)); } catch(e){}
+      return emb;
+    }
+    return DEFAULTS.map(function(x){ return JSON.parse(JSON.stringify(x)); });
+  }
+  function saveItems(){
+    try { localStorage.setItem(IK, JSON.stringify(ITEMS)); } catch(e){}
+    syncCounts();
+  }
+  var ITEMS = loadItems();
+
+  function loadStore(){
+    var s = {};
+    try { s = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e){ s = {}; }
+    if (EMBEDDED && EMBEDDED.dailyRecords && typeof EMBEDDED.dailyRecords === "object"){
+      var changed = false;
+      Object.keys(EMBEDDED.dailyRecords).forEach(function(k){
+        if (!s[k] || Object.keys(s[k]).length === 0){
+          s[k] = EMBEDDED.dailyRecords[k];
+          changed = true;
+        }
+      });
+      if (changed){
+        try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){}
+      }
+    }
+    return s;
+  }
+  var store = loadStore();
+
+  function pad(n){ return n < 10 ? "0" + n : "" + n; }
+  function keyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()); }
+  function dateOf(k){ var p = k.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function today(){ var d = new Date(); d.setHours(0,0,0,0); return d; }
+
+  var cur = keyOf(today());
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){}
+    updateVaultStat();
+  }
+  function stateOf(k){ return store[k] || {}; }
+
+  function goodOf(it, v){
+    if (v !== true && v !== false) return false;
+    return it.inv ? (v === false) : (v === true);
+  }
+  function scoreOf(k){
+    var s = stateOf(k), n = 0;
+    for (var i = 0; i < ITEMS.length; i++) if (goodOf(ITEMS[i], s[ITEMS[i].id])) n++;
+    return n;
+  }
+  function indexOfId(id){
+    for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].id === id) return i;
+    return -1;
+  }
+  function moveItem(fromIdx, toIdx){
+    if (fromIdx < 0 || fromIdx >= ITEMS.length) return;
+    toIdx = Math.max(0, Math.min(ITEMS.length - 1, toIdx));
+    if (fromIdx === toIdx) return;
+    var item = ITEMS.splice(fromIdx, 1)[0];
+    ITEMS.splice(toIdx, 0, item);
+  }
+
+  var listEl   = document.getElementById("list");
+  var plaqueEl = document.getElementById("plaque");
+  var previewEl= document.getElementById("preview");
+  var scoreEl  = document.getElementById("scoreNum");
+  var scoreAll = document.getElementById("scoreAll");
+  var streakEl = document.getElementById("streak");
+  var dateText = document.getElementById("dateText");
+  var wdText   = document.getElementById("wdText");
+  var prevBtn  = document.getElementById("prev");
+  var nextBtn  = document.getElementById("next");
+  var jumpBtn  = document.getElementById("todayJump");
+  var copyBtn  = document.getElementById("copyBtn");
+  var chipsEl  = document.getElementById("chips");
+  var ticksG   = document.getElementById("ticks");
+  var prog     = document.getElementById("ringProg");
+  var verdictEl= document.getElementById("verdict");
+  var editBtn  = document.getElementById("editBtn");
+  var headLabel= document.getElementById("headLabel");
+  var headHint = document.getElementById("headHint");
+  var cntTop   = document.getElementById("cntTop");
+  var vaultStatEl = document.getElementById("vaultStat");
+  var exportHtmlBtn = document.getElementById("exportHtmlBtn");
+  var copyAiBtn = document.getElementById("copyAiBtn");
+
+  var R = 80, CIRC = 2 * Math.PI * R;
+  prog.setAttribute("stroke-dasharray", CIRC.toFixed(2));
+  prog.setAttribute("stroke-dashoffset", CIRC.toFixed(2));
+
+  var editing = false;
+  var ICON = {
+    up:    '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.6 9.8 8.4H2.2z"/></svg>',
+    down:  '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 9.4 2.2 3.6h7.6z"/></svg>',
+    pen:   '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.1 9.9 2.7 7.3 8.2 1.8l2 2-5.5 5.5z"/><path d="M7.6 2.4l2 2"/></svg>',
+    trash: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 3.5h7.2M4.6 3.5V2.3h2.8v1.2M3.5 3.5l.5 6.3h4l.5-6.3"/></svg>'
+  };
+
+  function syncCounts(){
+    var n = ITEMS.length;
+    scoreAll.textContent = n;
+    cntTop.textContent = n;
+  }
+  syncCounts();
+
+  function updateVaultStat(){
+    var days = Object.keys(store).filter(function(k){ return store[k] && Object.keys(store[k]).length > 0; }).length;
+    var clicks = 0;
+    hypos.forEach(function(h){ clicks += h.history.length; });
+    vaultStatEl.textContent = "当前已累计：" + days + " 天记录 · " + clicks + " 次假设反馈";
+  }
+
+  function renderList(){
+    var s = stateOf(cur), html = "";
+    ITEMS.forEach(function(it, i){
+      var v = s[it.id];
+      var answered = (v === true || v === false);
+      var cls = "row" + (it.inv ? " is-inv" : "");
+      if (answered) cls += goodOf(it, v) ? " is-yes" : " is-no";
+
+      html += '<div class="' + cls + '" data-id="' + esc(it.id) + '">';
+      if (editing){
+        var opts = "";
+        for (var p = 0; p < ITEMS.length; p++){
+          opts += '<option value="' + p + '"' + (p === i ? ' selected' : '') + '>' + (p + 1) + '</option>';
+        }
+        html += '<select class="ord-select" data-act="move" title="直接选择排第几位" aria-label="调整位置">' + opts + '</select>';
+      } else {
+        html += '<div class="ord">' + (i + 1) + '</div>';
+      }
+
+      html += '<div class="txt"><h3>' + esc(it.t)
+            +   (it.inv ? '<span class="tag">反向</span>' : '') + '</h3>'
+            +   (it.note ? '<p>' + esc(it.note) + '</p>' : '')
+            + '</div>';
+
+      if (editing){
+        html += '<div class="tools">'
+              +   '<button data-act="up" title="上移"' + (i === 0 ? ' disabled' : '') + '>' + ICON.up + '</button>'
+              +   '<button data-act="down" title="下移"' + (i === ITEMS.length-1 ? ' disabled' : '') + '>' + ICON.down + '</button>'
+              +   '<button data-act="edit" title="修改">' + ICON.pen + '</button>'
+              +   '<button data-act="del" class="del" title="删除">' + ICON.trash + '</button>'
+              + '</div>';
+      } else {
+        html += '<div class="seg">'
+              +   '<button class="y" data-v="1" aria-pressed="' + (v === true) + '" aria-label="是 / 勾">✓</button>'
+              +   '<button class="n" data-v="0" aria-pressed="' + (v === false) + '" aria-label="否 / 叉">✕</button>'
+              + '</div>';
+      }
+      html += '</div>';
+    });
+    if (editing) html += '<button class="addRow" id="addRow">＋ 新增一项</button>';
+    if (!ITEMS.length) html += '<div class="empty-note">还没有条目，点下面新增。</div>';
+    listEl.innerHTML = html;
+  }
+
+  function renderHead(){
+    editBtn.textContent = editing ? "完成" : "调整条目";
+    editBtn.classList.toggle("on", editing);
+    headLabel.textContent = editing ? "编辑条目" : "今日条目";
+    headHint.textContent = editing ? "点左侧数字直接改排名" : "点 ✓ 或 ✕";
+    plaqueEl.classList.toggle("editing", editing);
+  }
+
+  function renderRing(sc){
+    var N = ITEMS.length, out = "";
+    if (N > 0){
+      for (var i = 0; i < N; i++){
+        var a = (-90 + i * 360 / N) * Math.PI / 180;
+        var x = (100 + Math.cos(a) * (R - 17)).toFixed(2);
+        var y = (100 + Math.sin(a) * (R - 17)).toFixed(2);
+        out += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="'
+             + (i < sc ? "#3D8B68" : "#E0DAD0") + '"/>';
+      }
+    }
+    ticksG.innerHTML = out;
+    prog.style.strokeDashoffset = (CIRC * (N ? (1 - sc / N) : 1)).toFixed(2);
+  }
+
+  function renderMeta(){
+    var d = dateOf(cur), sc = scoreOf(cur), N = ITEMS.length;
+    dateText.textContent = (d.getMonth()+1) + " 月 " + d.getDate() + " 日";
+    wdText.textContent = "周" + WD[d.getDay()];
+    scoreEl.textContent = sc;
+    renderRing(sc);
+
+    var t = keyOf(today());
+    nextBtn.disabled = (cur >= t);
+    jumpBtn.hidden = (cur === t);
+
+    var streak = 0, cursor = new Date(t);
+    if (N > 0){
+      while (scoreOf(keyOf(cursor)) === N){
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+    }
+    streakEl.textContent = streak > 0 ? "连续满分 " + streak + " 天" : "";
+
+    if (!N){ verdictEl.textContent = "还没有条目"; verdictEl.className = "verdict"; }
+    else if (sc === 0){ verdictEl.textContent = "今天还没开始勾选"; verdictEl.className = "verdict"; }
+    else if (sc === N){ verdictEl.textContent = cnNum(N) + " 件事都照顾到了"; verdictEl.className = "verdict full"; }
+    else { verdictEl.textContent = "已经完成 " + sc + " 项啦"; verdictEl.className = "verdict"; }
+  }
+
+  function buildText(){
+    var d = dateOf(cur), s = stateOf(cur), answered = 0, miss = [];
+    var lines = [d.getFullYear() + "." + pad(d.getMonth()+1) + "." + pad(d.getDate())
+                 + " 周" + WD[d.getDay()] + "｜基本功 " + scoreOf(cur) + "/" + ITEMS.length];
+    ITEMS.forEach(function(it){
+      var v = s[it.id];
+      if (v === true || v === false) answered++;
+      var good = goodOf(it, v);
+      if ((v === true || v === false) && !good) miss.push(it.neg || it.t);
+      var label = (v === true ? (it.neg || it.t) : (it.pos || it.t));
+      lines.push((v === true || v === false ? (good ? "✓ " : "✕ ") : "· ") + label);
+    });
+    if (miss.length) lines.push("缺：" + miss.join("、"));
+    return { text: lines.join("\n"), answered: answered };
+  }
+
+  function renderPreview(){
+    var r = buildText();
+    if (r.answered === 0){
+      previewEl.textContent = "勾选后自动生成，点「复制文本」粘进日记即可。";
+      previewEl.className = "empty";
+    } else {
+      previewEl.textContent = r.text;
+      previewEl.className = "";
+    }
+  }
+
+  function renderChips(){
+    var html = "", base = new Date(today());
+    for (var i = 0; i < 7; i++){
+      var d = new Date(base); d.setDate(d.getDate() - i);
+      var k = keyOf(d), s = stateOf(k), dots = "";
+      for (var j = 0; j < ITEMS.length; j++){
+        var v = s[ITEMS[j].id];
+        dots += '<i class="' + (goodOf(ITEMS[j], v) ? "on" : (v === true || v === false ? "off" : "")) + '"></i>';
+      }
+      html += '<button class="chip' + (k === cur ? " cur" : "") + '" data-k="' + k + '">'
+            +   '<span class="cwd">' + WD[d.getDay()] + '</span>'
+            +   '<span class="cday">' + d.getDate() + '</span>'
+            +   '<span class="dots">' + dots + '</span>'
+            + '</button>';
+    }
+    chipsEl.innerHTML = html;
+  }
+
+  // ---------- 基本功条目编辑弹层（含排位选择） ----------
+  var modal   = document.getElementById("modal");
+  var mTitle  = document.getElementById("mTitle");
+  var mName   = document.getElementById("mName");
+  var mNote   = document.getElementById("mNote");
+  var mPos    = document.getElementById("mPos");
+  var mInv    = document.getElementById("mInv");
+  var mOk     = document.getElementById("mOk");
+  var mCancel = document.getElementById("mCancel");
+  var mClose  = document.getElementById("mClose");
+  var editId  = null;
+
+  function populatePosSelect(totalCount, selectedIdx){
+    var html = "";
+    for (var i = 0; i < totalCount; i++){
+      var label = "第 " + (i + 1) + " 位";
+      if (i === 0) label += "（最重要）";
+      else if (i === totalCount - 1) label += "（末尾）";
+      html += '<option value="' + i + '"' + (i === selectedIdx ? ' selected' : '') + '>' + label + '</option>';
+    }
+    mPos.innerHTML = html;
+  }
+
+  function openEditor(it){
+    editId = it ? it.id : null;
+    mTitle.textContent = it ? "修改条目" : "新增条目";
+    mName.value = it ? it.t : "";
+    mNote.value = it ? (it.note || "") : "";
+    mInv.checked = it ? !!it.inv : false;
+    mName.classList.remove("bad");
+    if (it){
+      populatePosSelect(ITEMS.length, indexOfId(it.id));
+    } else {
+      populatePosSelect(ITEMS.length + 1, 0); // 新增时默认排第1位或任意自选
+    }
+    modal.hidden = false;
+    setTimeout(function(){ try { mName.focus(); mName.select(); } catch(e){} }, 40);
+  }
+  function closeEditor(){ modal.hidden = true; editId = null; }
+
+  mOk.addEventListener("click", function(){
+    var t = mName.value.replace(/\s+/g, " ").trim();
+    if (!t){ mName.classList.add("bad"); mName.focus(); return; }
+    var note = mNote.value.replace(/\s+/g, " ").trim();
+    var inv = mInv.checked;
+    var targetPos = parseInt(mPos.value, 10);
+    if (isNaN(targetPos)) targetPos = ITEMS.length;
+
+    if (editId){
+      var i = indexOfId(editId);
+      if (i >= 0){
+        var it = ITEMS[i];
+        it.t = t;
+        it.note = note;
+        if (inv){
+          it.inv = true;
+          it.pos = it.pos || ("不" + t);
+          it.neg = it.neg || t;
+        } else {
+          delete it.inv; delete it.pos; delete it.neg;
+        }
+        moveItem(i, targetPos);
+      }
+    } else {
+      var obj = { id: "u" + Date.now().toString(36) + Math.floor(Math.random()*900+100), t: t, note: note };
+      if (inv){ obj.inv = true; obj.pos = "不" + t; obj.neg = t; }
+      ITEMS.splice(Math.max(0, Math.min(ITEMS.length, targetPos)), 0, obj);
+    }
+    saveItems(); closeEditor(); refresh();
+  });
+  mCancel.addEventListener("click", closeEditor);
+  mClose.addEventListener("click", closeEditor);
+  mName.addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); mOk.click(); } });
+  mNote.addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); mOk.click(); } });
+
+  // ---------- 通用确认弹层 ----------
+  var confirmBox = document.getElementById("confirm");
+  var cTitle     = document.getElementById("cTitle");
+  var cText      = document.getElementById("cText");
+  var cOk        = document.getElementById("cOk");
+  var cCancel    = document.getElementById("cCancel");
+  var cClose     = document.getElementById("cClose");
+  var confirmCb  = null;
+
+  function openConfirm(title, htmlMsg, okLabel, cb){
+    cTitle.textContent = title;
+    cText.innerHTML = htmlMsg;
+    if (okLabel){
+      cOk.textContent = okLabel;
+      cOk.style.display = "";
+    } else {
+      cOk.style.display = "none";
+    }
+    confirmCb = cb || null;
+    confirmBox.hidden = false;
+  }
+  function closeConfirm(){ confirmBox.hidden = true; confirmCb = null; }
+  cOk.addEventListener("click", function(){
+    var cb = confirmCb;
+    closeConfirm();
+    if (cb) cb();
+  });
+  cCancel.addEventListener("click", closeConfirm);
+  cClose.addEventListener("click", closeConfirm);
+
+  function askDeleteItem(it){
+    if (ITEMS.length <= 1){
+      openConfirm("无法删除", "至少得留一项。<br><span>想全清空的话先加新的一条，再删这条。</span>", null, null);
+    } else {
+      openConfirm("删除条目", "删掉「<b>" + esc(it.t) + "</b>」？<br><span>以前打过的分不删，只是从此不再计入。</span>", "删除", function(){
+        var i = indexOfId(it.id);
+        if (i >= 0) ITEMS.splice(i, 1);
+        saveItems(); refresh();
+      });
+    }
+  }
+
+  document.addEventListener("keydown", function(ev){
+    if (ev.key !== "Escape") return;
+    if (!modal.hidden) closeEditor();
+    if (!hypoModal.hidden) closeHypoModal();
+    if (!confirmBox.hidden) closeConfirm();
+  });
+
+  // ---------- 列表交互（含下拉直接调序） ----------
+  listEl.addEventListener("change", function(ev){
+    var sel = ev.target.closest(".ord-select");
+    if (!sel) return;
+    var row = sel.closest(".row");
+    if (!row) return;
+    var id = row.getAttribute("data-id");
+    var fromIdx = indexOfId(id);
+    var toIdx = parseInt(sel.value, 10);
+    if (fromIdx >= 0 && !isNaN(toIdx)){
+      moveItem(fromIdx, toIdx);
+      saveItems();
+      refresh();
+    }
+  });
+
+  listEl.addEventListener("click", function(ev){
+    var btn = ev.target.closest("button");
+    if (!btn) return;
+    if (btn.id === "addRow"){ openEditor(null); return; }
+
+    var row = btn.closest(".row");
+    if (!row) return;
+    var id = row.getAttribute("data-id");
+    var act = btn.getAttribute("data-act");
+
+    if (act){
+      var i = indexOfId(id);
+      if (i < 0) return;
+      if (act === "up" && i > 0){
+        moveItem(i, i - 1);
+        saveItems(); refresh();
+      } else if (act === "down" && i < ITEMS.length-1){
+        moveItem(i, i + 1);
+        saveItems(); refresh();
+      } else if (act === "edit"){
+        openEditor(ITEMS[i]);
+      } else if (act === "del"){
+        askDeleteItem(ITEMS[i]);
+      }
+      return;
+    }
+
+    var val = btn.getAttribute("data-v") === "1";
+    var s = stateOf(cur);
+    if (s[id] === val) delete s[id];
+    else s[id] = val;
+    store[cur] = s;
+    save();
+    refresh();
+  });
+
+  editBtn.addEventListener("click", function(){
+    editing = !editing;
+    refresh();
+  });
+
+  function shiftDay(n){
+    var d = dateOf(cur); d.setDate(d.getDate() + n);
+    var k = keyOf(d);
+    if (k > keyOf(today())) return;
+    cur = k;
+    refresh();
+  }
+  prevBtn.addEventListener("click", function(){ shiftDay(-1); });
+  nextBtn.addEventListener("click", function(){ shiftDay(1); });
+  jumpBtn.addEventListener("click", function(){ cur = keyOf(today()); refresh(); });
+
+  chipsEl.addEventListener("click", function(ev){
+    var chip = ev.target.closest(".chip");
+    if (!chip) return;
+    cur = chip.getAttribute("data-k");
+    refresh();
+  });
+
+  function legacyCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function copyText(text){
+    if (navigator.clipboard && window.isSecureContext){
+      return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return legacyCopy(text); });
+    }
+    return Promise.resolve(legacyCopy(text));
+  }
+
+  copyBtn.addEventListener("click", function(){
+    var r = buildText();
+    if (r.answered === 0){
+      copyBtn.textContent = "先勾选吧";
+      copyBtn.classList.add("done");
+      setTimeout(function(){ copyBtn.textContent = "复制文本"; copyBtn.classList.remove("done"); }, 1200);
+      return;
+    }
+    copyText(r.text).then(function(ok){
+      copyBtn.textContent = ok ? "已复制" : "请手动复制";
+      copyBtn.classList.add("done");
+      if (!ok){
+        var range = document.createRange();
+        range.selectNodeContents(previewEl);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      setTimeout(function(){ copyBtn.textContent = "复制文本"; copyBtn.classList.remove("done"); }, 1500);
+    });
+  });
+
+  // =========================================================
+  // 4. 数据固化进 HTML 与一键导出给 AI
+  // =========================================================
+  function buildPayload(){
+    return {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      items: ITEMS,
+      dailyRecords: store,
+      hypotheses: hypos
+    };
+  }
+
+  exportHtmlBtn.addEventListener("click", function(){
+    var payload = buildPayload();
+    var embedEl = document.getElementById("embedded-data");
+    // 避免文本中意外出现闭合标签字符
+    var escSlash = String.fromCharCode(60) + "\\/";
+    embedEl.textContent = JSON.stringify(payload, null, 2).replace(/<\//g, escSlash);
+    var htmlStr = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    var blob = new Blob([htmlStr], { type: "text/html;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "基本功.html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+
+    var old = exportHtmlBtn.textContent;
+    exportHtmlBtn.textContent = "已生成下载 ✓";
+    setTimeout(function(){ exportHtmlBtn.textContent = old; }, 1800);
+  });
+
+  copyAiBtn.addEventListener("click", function(){
+    var payload = buildPayload();
+    var text = "以下是我的「基本功」与「个人假设验证」完整历史数据（JSON），请帮我分析近况、规律与改进建议：\n\n"
+             + JSON.stringify(payload, null, 2);
+    copyText(text).then(function(ok){
+      var old = copyAiBtn.textContent;
+      copyAiBtn.textContent = ok ? "已复制全部数据 ✓" : "请使用保存 HTML";
+      setTimeout(function(){ copyAiBtn.textContent = old; }, 1800);
+    });
+  });
+
+  function refresh(){
+    renderHead();
+    renderList();
+    renderMeta();
+    renderPreview();
+    renderChips();
+    updateVaultStat();
+  }
+
+  renderHypos();
+  refresh();
+})();
+</script>
+
+</body></html>
