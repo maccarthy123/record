@@ -2244,12 +2244,21 @@
   }
 
   function ghFetch(url, opt){
+    var tk = (syncCfg.token || "").trim();
     var headers = Object.assign({
       "Accept": "application/vnd.github+json",
-      "Authorization": "Bearer " + syncCfg.token
+      "Authorization": "Bearer " + tk
     }, (opt && opt.headers) || {});
     return fetch(url, Object.assign({}, opt || {}, { headers: headers })).then(function(res){
-      if (!res.ok) throw new Error("HTTP " + res.status);
+      if (!res.ok){
+        return res.text().then(function(body){
+          var msg = "HTTP " + res.status;
+          try { var j = JSON.parse(body); if (j && j.message) msg += ": " + j.message; } catch(e){}
+          var err = new Error(msg);
+          err.status = res.status;
+          throw err;
+        });
+      }
       return res.json();
     });
   }
@@ -2311,9 +2320,21 @@
       setSyncUI("ok", "云同步：已连接 ✓");
       if (!quiet) showSmMsg("ok", "已从私有 Gist 同步最新数据。");
       return true;
-    }).catch(function(){
-      setSyncUI("err", "云同步：连接失败");
-      if (!quiet) showSmMsg("err", "同步失败，请检查网络或 Token 是否有效（需勾选 gist 权限）。");
+    }).catch(function(err){
+      if (err && err.status === 404 && syncCfg.gistId){
+        syncCfg.gistId = "";
+        saveSyncCfg(syncCfg);
+        return pullFromGist(quiet, forceCloud);
+      }
+      var isAuth = err && (err.status === 401 || err.status === 403);
+      var label = isAuth ? "云同步：密钥或权限错误(" + err.status + ")" : (err && err.status ? "云同步：错误(" + err.status + ")" : "云同步：网络连不上GitHub");
+      setSyncUI("err", label);
+      if (!quiet){
+        var detail = (err && err.message) ? err.message : "无法连接 api.github.com";
+        if (err && err.status === 401) detail += "（请确认使用的是 Tokens (classic) 且未过期）";
+        if (err && err.status === 403) detail += "（请确认生成 Token 时勾选了 gist 权限）";
+        showSmMsg("err", "拉取失败：" + detail);
+      }
       return false;
     });
   }
@@ -2332,8 +2353,19 @@
     }).then(function(){
       setSyncUI("ok", "云同步：已同步 ✓");
       return true;
-    }).catch(function(){
-      setSyncUI("err", "云同步：同步失败");
+    }).catch(function(err){
+      if (err && err.status === 404 && syncCfg.gistId){
+        syncCfg.gistId = "";
+        saveSyncCfg(syncCfg);
+        return pushToGist();
+      }
+      var hint = "云同步：失败";
+      if (err && err.status === 401) hint = "云同步：密钥无效(401)";
+      else if (err && err.status === 403) hint = "云同步：无权限(403)";
+      else if (err && err.status) hint = "云同步：错误(" + err.status + ")";
+      else hint = "云同步：网络连不上GitHub";
+      setSyncUI("err", hint);
+      if (smMsg) showSmMsg("err", "推送失败：" + (err && err.message ? err.message : "无法连接 api.github.com"));
       return false;
     });
   }
@@ -2365,6 +2397,7 @@
       return;
     }
     smToken.classList.remove("bad");
+    if (syncCfg.token !== tk) syncCfg.gistId = "";
     syncCfg.token = tk;
     saveSyncCfg(syncCfg);
     pullFromGist(false, false).then(function(ok){
